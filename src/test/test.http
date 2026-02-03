@@ -1,0 +1,15 @@
+## Create Event
+POST http://localhost:3000/api/events
+Content-Type: application/json
+
+{
+    "title": "Test Event",
+    "timezone": "America/New_York",
+    "startsAt": "2026-01-29T00:00:00Z",
+    "endsAt": "2026-01-29T01:00:00Z"
+}
+
+## Get Events
+GET http://localhost:3000/events/64f2dfea-0efd-47e6-9f39-22e8df77ca46
+Content-Type: application/json
+
