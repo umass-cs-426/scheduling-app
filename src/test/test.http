@@ -1,4 +1,5 @@
-## Create Event
+### Create Event
+# @name createEvent
 POST http://localhost:3000/api/events
 Content-Type: application/json
 
@@ -9,7 +10,6 @@ Content-Type: application/json
     "endsAt": "2026-01-29T01:00:00Z"
 }
 
-## Get Events
-GET http://localhost:3000/events/64f2dfea-0efd-47e6-9f39-22e8df77ca46
+### Get Availability
+GET http://localhost:3000/api/events/{{createEvent.response.body.id}}/availability
 Content-Type: application/json
-
