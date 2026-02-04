@@ -2,7 +2,7 @@
 title: 2.1 — The Monolithic System Runs
 
 # try also 'default' to start simple
-theme: seriph
+theme: default
 # random image from a curated Unsplash collection by Anthony
 # like them? see https://unsplash.com/collections/94734566/slidev
 background: https://cover.sli.dev
@@ -27,6 +27,8 @@ mdc: true
 
 # duration of the presentation
 duration: 60min
+
+css: ./slides.css
 ---
 
 # The Monolithic System Runs
@@ -35,11 +37,49 @@ duration: 60min
 
 ---
 
+## layout: statement
+
 # Last Time
 
-Last time we started to review the architecture of a monolithic scheduling system:
+<div class="text-3xl leading-8">
+We started to review the architecture of a monolithic scheduling system. We looked at the structure of the codebase and some of its key modules and types.
+</div>
 
-- `src/lib`: shared utilities (errors, HTTP helpers, Result type)
+---
+
+# Shared Utilities
+
+Path: `src/lib`
+
+Files: `result.ts`, `error.ts`, `http.ts`
+
+`Ok<T>`, `Err<E>`, and `Result<T, E>` types for explicit error handling.
+
+**Remember**: prefer `Result` over throwing exceptions for predictable control flow. Converting errors into data allows the service layer to communicate failures cleanly to the HTTP layer or persistent storage.
+
+---
+
+# Scheduling Module Structure
+
+Path: `src/modules/scheduling/model`
+
+Files: `IEvent.ts`, `IAvailability.ts`
+
+For our scheduling app, we have two main models:
+
+- `IEvent`: represents a scheduled event with title, timezone, start/end times
+- `IAvailability`: represents a user's availability for an event
+
+We do not need anything complex here since we are trying to design the system by contract.
+
+**Remember**: domain models represent core business concepts. They are independent of transport (HTTP) or storage (database) concerns.
+
+---
+
+- `src/modules/scheduling/dto/`:
+  - Data Transfer Objects: `IEventDTO`, `IAvailabilityDTO`
+- `src/modules/scheduling/repository/ISchedulingRepository.ts`:
+  - Repository interface for storage operations
 
 ---
 
@@ -1084,5 +1124,16 @@ This monolith is intentionally small, but it is **structurally complete**: a cle
 .mermaid-fit .mermaid svg {
   width: 100% !important;
   height: auto !important;
+}
+
+/* Global base size */
+.slidev-layout {
+  font-size: 1.6rem; /* try 1.2–1.4 */
+}
+
+/* Optional: keep body text consistent */
+.slidev-layout p,
+.slidev-layout li {
+  font-size: 20px;
 }
 </style>

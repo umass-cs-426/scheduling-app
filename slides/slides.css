@@ -1,0 +1,19 @@
+.mermaid-fit .mermaid {
+  transform: scale(0.75);
+  transform-origin: top left;
+}
+
+.mermaid-fit .mermaid svg {
+  width: 100% !important;
+  height: auto !important;
+}
+
+:root {
+  font-size: 20px; /* try 18–22px */
+}
+
+/* Optional: scale code blocks too */
+:root {
+  --slidev-code-font-size: 14px;
+  --slidev-code-line-height: 20px;
+}
