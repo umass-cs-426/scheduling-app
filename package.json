@@ -10,7 +10,8 @@
     "dev": "dotenv -- node --watch -r ts-node/register src/server.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node --env-file=.env dist/Server.js",
-    "test": "dotenv -- jest --runInBand"
+    "test": "dotenv -- jest --runInBand",
+    "install:slides": "npm --prefix ./client install"
   },
   "keywords": [],
   "author": "",
