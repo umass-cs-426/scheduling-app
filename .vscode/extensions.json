@@ -1,7 +1,8 @@
 {
-    "recommendations": [
-        "gruntfuggly.todo-tree",
-        "ritwickdey.liveserver",
-        "humao.rest-client"
-    ]
+  "recommendations": [
+    "gruntfuggly.todo-tree",
+    "ritwickdey.liveserver",
+    "humao.rest-client",
+    "tomoki1207.pdf"
+  ]
 }

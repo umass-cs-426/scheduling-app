@@ -11,7 +11,9 @@
     "build": "tsc -p tsconfig.json",
     "start": "node --env-file=.env dist/Server.js",
     "test": "dotenv -- jest --runInBand",
-    "install:slides": "npm --prefix ./client install"
+    "install:slides": "npm --prefix ./slides install",
+    "export:slides": "node ./slides/scripts/export-slides.mjs",
+    "present": "npm --prefix ./slides run dev"
   },
   "keywords": [],
   "author": "",
