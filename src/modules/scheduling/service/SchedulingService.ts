@@ -6,7 +6,14 @@ import ISubmitAvailabilityInput from "./ISubmitAvailabilityInput";
 import IEventDTO from "../dto/IEventDTO";
 import IAvailabilityDTO from "../dto/IAvailabilityDTO";
 
-export default class SchedulingService {
+export interface ISchedulingService {
+    createEvent(input: ICreateEventInput): Promise<Result<IEventDTO, ApiError>>;
+    submitAvailability(eventId: string, input: ISubmitAvailabilityInput): Promise<Result<IAvailabilityDTO, ApiError>>;
+    listAvailability(eventId: string): Promise<Result<{ event: IEventDTO; availability: IAvailabilityDTO[] }, ApiError>>;
+    reset(): Promise<Result<void, ApiError>>;
+}
+
+export default class SchedulingService implements ISchedulingService {
     private readonly repo: ISchedulingRepository;
 
     constructor(repo: ISchedulingRepository) {

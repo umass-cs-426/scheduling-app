@@ -5,7 +5,14 @@ import { sendResult } from "../../../lib/http";
 import { err, ok } from "../../../lib/result";
 import V from "./SchedulingControllerValidator";
 
-export default class SchedulingController {
+export interface ISchedulingController {
+    createEvent(req: Request, res: Response): Promise<void>;
+    submitAvailability(req: Request, res: Response): Promise<void>;
+    listAvailability(req: Request, res: Response): Promise<void>;
+    reset(req: Request, res: Response): Promise<void>;
+}
+
+export default class SchedulingController implements ISchedulingController {
     private readonly service: SchedulingService;
 
     constructor(service: SchedulingService) {
