@@ -27,436 +27,94 @@ mdc: true
 
 # duration of the presentation
 duration: 60min
-
-css: ./slides.css
 ---
 
 # Scalabe Web Systems
 # COMPSCI 426
-## Lecture 1.2 The Monolithic System Exists
-
-A narrated walkthrough of a TypeScript + Express monolith
-
----
-layout: image-right
-image: https://microservices.io/i/DecomposingApplications.011.jpg
-backgroundSize: 95%
----
-
-# What is a monolith?
-
-A **monolith** is a single deployable application that contains all core layers—routing, business logic, and data access—in one codebase and usually one process.
-
-The benefits are simplicity, shared code, and easy local development.
-
-The **trade‑off** is that boundaries are _logical_, not physical: we must design the code structure carefully to keep the layers clean.
+## Lecture 2.1 The Monolithic System Runs
 
 ---
 layout: image-right
 image: https://schedule.cc/images/blog/calendar-scheduling-tool.png?v=1684144480862882721
-backgroundSize: 80em 100%
 ---
 
-# App Overview
-## What it does
-This application is a **small scheduling API**. 
+# Last Time
 
-*It lets a client:* 
+We started looking at the scheduling monolith:
 
-- **Create** a scheduling event
-- **Submit** a user’s availability for that event
-- **List** all availability for an event.
-
-Basic - no frills, just the core domain logic.
-
-This is intentionally tiny so we can see the whole system at once.
-
----
-layout: image-right
-image: https://schedule.cc/images/blog/calendar-scheduling-tool.png?v=1684144480862882721
-backgroundSize: 80em 100%
----
-
-# App Overview
-## What it does _not_ do
-It does **not** include authentication, persistent storage, or a user interface. 
-
-It does **not**:
-
-- Strict time-zone rules
-- Availability constraints
-- Pagination
-- Caching & Logging
-
-**These omissions are deliberate**
-
-The goal is clarity about structure, not completeness. Just enough for us to explore the monolith architecture.
-
----
-layout: image-left
-image: images/src-folder.png
-backgroundSize: 25em 80%
----
-
-# How monoliths <br> are organized
-Even in a monolith, it is critical that we **separate concerns** clearly.
-
-This app has four main layers:
-
-- **lib/**: shared utilities (errors, results, HTTP helpers).
-- **modules/**: domain logic (models, services, repositories).
-- **app/**: application wiring (Express middleware and routes).
-- **tests/**: behavior verification (integration tests).
-  This lecture follows that same order so the code reads like a story.
+- **Code Organization**
+- **Request/Response Lifecycle**
+- **Support Libraries:** `ApiError`, `Result<T, E>`
+- **Domain models:** `IEvent`, `IAvailability`
+- **Data Transfer Objects (DTOs):** `IEventDTO`, `IAvailabilityDTO`
+- **Input Shapes:** `ICreateEventInput`, `ISubmitAvailabilityInput`
 
 ---
 
-# Architecture
-## High-Level Flow
-Even a monolith has several components. 
+# Project Structure
 
-Here’s how they interact:
+This is what we have explored so far:
 
-```mermaid
-%%{init: {'themeVariables': {'fontSize': '20px'}}}%%
-flowchart LR
-    C[Client] --> E[Express]
-    E --> R[Router]
-    R --> Ctrl[Controller]
-    Ctrl --> Svc[Service]
-    Svc --> Repo[Repo]
-    Repo --> Mem[Memory]
-    Svc --> DTO[DTOs]
-    Ctrl --> Resp[Response]
-```
-
-We do not need to know what all of these parts do yet
-
-We will explore them step by step.
-
----
-
-# Code organization diagram
-
-```mermaid
-%%{init: {'themeVariables': {'fontSize': '11px'}}}%%
-flowchart TD
-    Root[repo<br/>root] --> Src[src/]
-    Root --> Tests[src/test/]
-    Root --> Cfg[config<br/>files]
-
-    Src --> Lib[lib/]
-    Src --> Mod[modules/]
-    Src --> App[app/]
-    Src --> RootFiles[Server.ts<br/>AppBuilder.ts]
-
-    Lib --> Error[error.ts]
-    Lib --> Http[http.ts]
-    Lib --> Result[result.ts]
-
-    Mod --> Sched[scheduling/]
-    Mod --> Mem[repository/<br/>memory/]
-
-    Sched --> Model[model/]
-    Sched --> DTO[dto/]
-    Sched --> Service[service/]
-    Sched --> Controller[controller/]
-    Sched --> Routes[routes/]
+```plaintext
+.
+├── lib
+│   ├── error.ts
+│   ├── http.ts
+│   └── result.ts
+└── modules
+    └── scheduling
+        ├── dto
+        │   ├── IAvailabilityDTO.ts
+        │   └── IEventDTO.ts
+        ├── model
+        │   ├── IAvailability.ts
+        │   └── IEvent.ts
+        └── service
+            ├── ICreateEventInput.ts
+            └── ISubmitAvailabilityInput.ts
 ```
 
 ---
 
-# Request lifecycle at a glance
-
-```mermaid
-%%{init: {'themeVariables': {'fontSize': '10px'}}}%%
-sequenceDiagram
-    participant C as Client
-    participant R as Router
-    participant Ctrl as Ctrl
-    participant S as Service
-    participant Repo as Repo
-
-    C->>R: HTTP req
-    R->>Ctrl: handler
-    Ctrl->>S: validated input
-    S->>Repo: data
-    Repo-->>S: models
-    S-->>Ctrl: Result
-    Ctrl-->>C: HTTP res
-```
-
----
-
-# src/lib/result.ts: Why a Result type?
-
-We want a consistent way to return **success or failure** without throwing exceptions everywhere. A small `Result` type makes the flow explicit: functions either return `ok(value)` or `err(error)`, and callers can respond accordingly. This keeps controllers simple and predictable.
-
-```ts
-// src/lib/result.ts (lines 1–13)
-export interface Ok<T> {
-  ok: true;
-  value: T;
-}
-
-export interface Err<E> {
-  ok: false;
-  error: E;
-}
-
-export type Result<T, E> = Ok<T> | Err<E>;
-```
-
----
-
-# src/lib/result.ts: Helper constructors
-
-These helpers avoid repeated object literals. `ok()` and `err()` keep the code readable and consistent across services and controllers.
-
-```ts
-// src/lib/result.ts (lines 15–29)
-export function ok<T>(value: T): Ok<T> {
-  return { ok: true, value };
-}
-
-export function err<E>(error: E): Err<E> {
-  return { ok: false, error };
-}
-
-export function isOk<T, E>(r: Result<T, E>): r is Ok<T> {
-  return r.ok;
-}
-
-export function isErr<T, E>(r: Result<T, E>): r is Err<E> {
-  return !r.ok;
-}
-```
-
----
-
-# src/lib/error.ts: Centralized API errors
-
-A consistent error shape avoids ad‑hoc status codes or message strings scattered across the codebase. We define a small set of error codes and provide constructors for each one.
-
-```ts
-// src/lib/error.ts (lines 1–18)
-export type ApiErrorCode =
-    | "VALIDATION_ERROR"
-    | "NOT_FOUND"
-    | "CONFLICT"
-    | "INTERNAL_ERROR";
-
-export class ApiError extends Error {
-    public readonly code: ApiErrorCode;
-    public readonly status: number;
-    public readonly details?: unknown;
-
-    constructor(args: { code: ApiErrorCode; status: number; message: string; details?: unknown }) {
-        super(args.message);
-        this.code = args.code;
-        this.status = args.status;
-        this.details = args.details;
-    }
-```
-
----
-
-# src/lib/error.ts: Factory methods
-
-These helpers keep error creation consistent and searchable throughout the code.
-
-```ts
-// src/lib/error.ts (lines 19–33)
-    static validation(message: string, details?: unknown): ApiError {
-        return new ApiError({ code: "VALIDATION_ERROR", status: 400, message, details });
-    }
-
-    static notFound(message: string): ApiError {
-        return new ApiError({ code: "NOT_FOUND", status: 404, message });
-    }
-
-    static conflict(message: string): ApiError {
-        return new ApiError({ code: "CONFLICT", status: 409, message });
-    }
-
-    static internal(message = "Internal error", details?: unknown): ApiError {
-        return new ApiError({ code: "INTERNAL_ERROR", status: 500, message, details });
-    }
-}
-```
-
----
-
-# README.md: Async programming & `Promise<T>` (primer)
-
-Before we see `async` functions in the code, we need a quick mental model. **Asynchronous programming** means a function can start work and _finish later_. In JavaScript/TypeScript, a `Promise<T>` is the object that represents that “future” result: it will eventually **resolve** to a `T`, or **reject** with an error. We use `async`/`await` to write this in a readable, step‑by‑step way. We’ll go deeper in a later lecture, but this is enough to follow today’s flow.
-
----
-
-# src/lib/http.ts: Async safety for Express
-
-Express does not automatically catch rejected promises from async handlers. This wrapper converts any async handler into a safe handler that forwards errors to Express’s error middleware.
-
-```ts
-// src/lib/http.ts (lines 1–11)
-import type { NextFunction, Request, Response } from "express";
-import { ApiError } from "./error";
-import type { Result } from "./result";
-
-export function asyncHandler(
-  fn: (req: Request, res: Response, next: NextFunction) => Promise<any>,
-) {
-  return (req: Request, res: Response, next: NextFunction) => {
-    Promise.resolve(fn(req, res, next)).catch(next);
-  };
-}
-```
-
----
-
-# src/lib/http.ts: Send a Result as HTTP
-
-`sendResult` is a tiny adapter from domain logic to HTTP responses. This is the glue between our service layer and our controller layer.
-
-```ts
-// src/lib/http.ts (lines 13–30)
-export function sendResult<T>(
-  res: Response,
-  result: Result<T, ApiError>,
-  successStatus = 200,
-): void {
-  if (result.ok) {
-    res.status(successStatus).json(result.value);
-    return;
-  }
-
-  const e = result.error;
-  res.status(e.status).json({
-    error: {
-      code: e.code,
-      message: e.message,
-      details: e.details ?? null,
-    },
-  });
-}
-```
-
----
-
-# IEvent.ts: Domain model
-
-Path: `src/modules/scheduling/model/IEvent.ts`
-
-The **domain model** uses `Date` objects because business logic works with real time objects, not strings.
-
-```ts
-// src/modules/scheduling/model/IEvent.ts (lines 1–9)
-export default interface IEvent {
-  id: string;
-  title: string;
-  timezone: string;
-  startsAt: Date;
-  endsAt: Date;
-  createdAt: Date;
-}
-```
-
----
-
-# IAvailability.ts: Domain model
-
-Path: `src/modules/scheduling/model/IAvailability.ts`
-
-Availability is also represented with `Date` objects for accuracy in logic and comparisons.
-
-```ts
-// src/modules/scheduling/model/IAvailability.ts (lines 1–10)
-export default interface IAvailability {
-  id: string;
-  eventId: string;
-  userId: string;
-  availableStart: Date;
-  availableEnd: Date;
-  note?: string;
-  createdAt: Date;
-}
-```
-
----
-
-# IEventDTO.ts: DTO shape
-
-Path: `src/modules/scheduling/dto/IEventDTO.ts`
-
-A **DTO** (data transfer object) is the shape of data we send over HTTP. Dates become ISO strings.
-
-```ts
-// src/modules/scheduling/dto/IEventDTO.ts (lines 1–11)
-export default interface IEventDTO {
-  id: string;
-  title: string;
-  timezone: string;
-  startsAt: string; // ISO
-  endsAt: string; // ISO
-  createdAt: string;
-}
-```
-
----
-
-# IAvailabilityDTO.ts: DTO shape
-
-Path: `src/modules/scheduling/dto/IAvailabilityDTO.ts`
-
-Here we also normalize `note` to `null` when absent so the response is consistent.
-
-```ts
-// src/modules/scheduling/dto/IAvailabilityDTO.ts (lines 1–14)
-export default interface IAvailabilityDTO {
-  id: string;
-  eventId: string;
-  userId: string;
-  availableStart: string; // ISO
-  availableEnd: string; // ISO
-  note: string | null;
-  createdAt: string;
-}
-```
-
----
-
-# ICreateEventInput.ts: Input contract
-
-Path: `src/modules/scheduling/service/ICreateEventInput.ts`
-
-Input interfaces describe the shape of **validated** request bodies that flow into the service layer.
-
-```ts
-// src/modules/scheduling/service/ICreateEventInput.ts (lines 1–8)
-export default interface ICreateEventInput {
-  title: string;
-  timezone: string;
-  startsAt: string; // ISO
-  endsAt: string; // ISO
-}
-```
-
----
-
-# ISubmitAvailabilityInput.ts: Input contract
-
-Path: `src/modules/scheduling/service/ISubmitAvailabilityInput.ts`
-
-This contract makes the service signature explicit and stable.
-
-```ts
-// src/modules/scheduling/service/ISubmitAvailabilityInput.ts (lines 1–8)
-export default interface ISubmitAvailabilityInput {
-  userId: string;
-  availableStart: string; // ISO
-  availableEnd: string; // ISO
-  note?: string;
-}
+# Project Structure
+
+Today, we are going to look at the rest of the code:
+
+```plaintext
+.
+├── AppBuilder.ts
+├── Server.ts
+├── app
+│   └── router.ts
+├── lib
+│   ├── error.ts
+│   ├── http.ts
+│   └── result.ts
+├── modules
+│   ├── repository
+│   │   └── memory
+│   │       └── InMemorySchedulingRepo.ts
+│   └── scheduling
+│       ├── controller
+│       │   ├── SchedulingController.ts
+│       │   └── SchedulingControllerValidator.ts
+│       ├── dto
+│       │   ├── IAvailabilityDTO.ts
+│       │   └── IEventDTO.ts
+│       ├── model
+│       │   ├── IAvailability.ts
+│       │   └── IEvent.ts
+│       ├── repository
+│       │   └── ISchedulingRepository.ts
+│       ├── routes
+│       │   └── SchedulingRoutesBuilder.ts
+│       └── service
+│           ├── ICreateEventInput.ts
+│           ├── ISubmitAvailabilityInput.ts
+│           └── SchedulingService.ts
+└── test
+    ├── scheduling.int.test.ts
+    └── test.http
 ```
 
 ---
