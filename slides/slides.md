@@ -1,35 +1,107 @@
 ---
-title: 1.2 — The Monolithic System Exists
+title: 2.1 — The Monolithic System Runs
+
+# try also 'default' to start simple
 theme: default
+# random image from a curated Unsplash collection by Anthony
+# like them? see https://unsplash.com/collections/94734566/slidev
+background: https://cover.sli.dev
+# some information about your slides (markdown enabled)
+info: |
+  ## COMPSCI 426: Scalable Web Systems
+  These slides have been prepared by Tim Richards
+  for educational purposes only.
+
+# apply UnoCSS classes to the current slide
+class: text-center
+# https://sli.dev/features/drawing
+
+drawings:
+  persist: true
+
+# slide transition: https://sli.dev/guide/animations.html#slide-transitions
+transition: slide-left
+
+# enable MDC Syntax: https://sli.dev/features/mdc
+mdc: true
+
+# duration of the presentation
+duration: 60min
+
+css: ./slides.css
 ---
 
-# README.md: 1.2 — The Monolithic System Exists
+# Scalabe Web Systems
+# COMPSCI 426
+## Lecture 1.2 The Monolithic System Exists
 
-### A narrated walkthrough of a TypeScript + Express monolith
-
----
-
-# README.md: App Overview — What it does
-
-This application is a **small scheduling API**. It lets a client create a scheduling event, submit a user’s availability for that event, and list all availability for an event. It also exposes a simple `/health` endpoint so we can confirm the server is alive. This is intentionally tiny so we can see the whole system at once.
+A narrated walkthrough of a TypeScript + Express monolith
 
 ---
-
-# README.md: App Overview — What it does _not_ do
-
-It does **not** include authentication, persistent storage, or a user interface. It does **not** enforce strict time-zone rules or availability constraints. It does **not** include pagination, caching, or production logging. These omissions are deliberate: the goal is clarity about structure, not completeness.
-
+layout: image-right
+image: https://microservices.io/i/DecomposingApplications.011.jpg
+backgroundSize: 95%
 ---
 
-# README.md: What is a monolith?
+# What is a monolith?
 
-A **monolith** is a single deployable application that contains all core layers—routing, business logic, and data access—in one codebase and usually one process. The benefits are simplicity, shared code, and easy local development. The trade‑off is that boundaries are _logical_, not physical: we must design the code structure carefully to keep the layers clean.
+A **monolith** is a single deployable application that contains all core layers—routing, business logic, and data access—in one codebase and usually one process.
+
+The benefits are simplicity, shared code, and easy local development.
+
+The **trade‑off** is that boundaries are _logical_, not physical: we must design the code structure carefully to keep the layers clean.
 
 ---
+layout: image-right
+image: https://schedule.cc/images/blog/calendar-scheduling-tool.png?v=1684144480862882721
+backgroundSize: 80em 100%
+---
 
-# README.md: How monoliths are organized
+# App Overview
+## What it does
+This application is a **small scheduling API**. 
 
-Even in a monolith, we still separate responsibilities:
+*It lets a client:* 
+
+- **Create** a scheduling event
+- **Submit** a user’s availability for that event
+- **List** all availability for an event.
+
+Basic - no frills, just the core domain logic.
+
+This is intentionally tiny so we can see the whole system at once.
+
+---
+layout: image-right
+image: https://schedule.cc/images/blog/calendar-scheduling-tool.png?v=1684144480862882721
+backgroundSize: 80em 100%
+---
+
+# App Overview
+## What it does _not_ do
+It does **not** include authentication, persistent storage, or a user interface. 
+
+It does **not**:
+
+- Strict time-zone rules
+- Availability constraints
+- Pagination
+- Caching & Logging
+
+**These omissions are deliberate**
+
+The goal is clarity about structure, not completeness. Just enough for us to explore the monolith architecture.
+
+---
+layout: image-left
+image: images/src-folder.png
+backgroundSize: 25em 80%
+---
+
+# How monoliths <br> are organized
+Even in a monolith, it is critical that we **separate concerns** clearly.
+
+This app has four main layers:
 
 - **lib/**: shared utilities (errors, results, HTTP helpers).
 - **modules/**: domain logic (models, services, repositories).
@@ -39,10 +111,14 @@ Even in a monolith, we still separate responsibilities:
 
 ---
 
-# README.md: Architecture diagram (high level)
+# Architecture
+## High-Level Flow
+Even a monolith has several components. 
+
+Here’s how they interact:
 
 ```mermaid
-%%{init: {'themeVariables': {'fontSize': '7px'}}}%%
+%%{init: {'themeVariables': {'fontSize': '20px'}}}%%
 flowchart LR
     C[Client] --> E[Express]
     E --> R[Router]
@@ -54,9 +130,13 @@ flowchart LR
     Ctrl --> Resp[Response]
 ```
 
+We do not need to know what all of these parts do yet
+
+We will explore them step by step.
+
 ---
 
-# README.md: Code organization diagram
+# Code organization diagram
 
 ```mermaid
 %%{init: {'themeVariables': {'fontSize': '11px'}}}%%
@@ -86,7 +166,7 @@ flowchart TD
 
 ---
 
-# README.md: Request lifecycle at a glance
+# Request lifecycle at a glance
 
 ```mermaid
 %%{init: {'themeVariables': {'fontSize': '10px'}}}%%
@@ -1422,5 +1502,16 @@ This monolith is intentionally small, but it is **structurally complete**: a cle
 .mermaid-fit .mermaid svg {
   width: 100% !important;
   height: auto !important;
+}
+
+/* Global base size */
+.slidev-layout {
+  font-size: 1.6rem; /* try 1.2–1.4 */
+}
+
+/* Optional: keep body text consistent */
+.slidev-layout p,
+.slidev-layout li {
+  font-size: 20px;
 }
 </style>
