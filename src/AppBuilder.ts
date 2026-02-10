@@ -1,4 +1,5 @@
 import { AppRouter } from "./app/router";
+import SchedulingModule from "./modules/scheduling/SchedulingModule";
 import { InMemorySchedulingRepo } from "./modules/repository/memory/InMemorySchedulingRepo";
 import SchedulingService from "./modules/scheduling/service/SchedulingService";
 import SchedulingController from "./modules/scheduling/controller/SchedulingController";
@@ -17,6 +18,7 @@ export default class AppBuilder {
         const service = new SchedulingService(repo);
         const controller = new SchedulingController(service);
 
-        return new AppRouter({ schedulingController: controller });
+        const schedulingModule = new SchedulingModule(controller);
+        return new AppRouter({ modules: [schedulingModule] });
     }
 }
