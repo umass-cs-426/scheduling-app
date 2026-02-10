@@ -1,6 +1,5 @@
 import ISchedulingRepository from "./ISchedulingRepository";
 import IEvent from "../model/IEvent";
-import IAvailability from "../model/IAvailability";
 import crypto from "crypto";
 
 // IN-MEMORY REPOSITORY IMPLEMENTATION ///////////////////////////////////////
@@ -12,7 +11,6 @@ import crypto from "crypto";
 
 export class InMemorySchedulingRepo implements ISchedulingRepository {
   private events: Map<string, IEvent> = new Map();
-  private availabilities: Map<string, IAvailability[]> = new Map();
 
   async createEvent(args: {
     title: string;
@@ -36,45 +34,11 @@ export class InMemorySchedulingRepo implements ISchedulingRepository {
     return this.events.get(eventId) || null;
   }
 
-  async upsertAvailability(args: {
-    eventId: string;
-    userId: string;
-    availableStart: Date;
-    availableEnd: Date;
-    note?: string;
-  }): Promise<IAvailability> {
-    const availabilitiesForEvent = this.availabilities.get(args.eventId) || [];
-    let availability = availabilitiesForEvent.find(
-      (a) => a.userId === args.userId,
-    );
-
-    if (availability) {
-      availability.availableStart = args.availableStart;
-      availability.availableEnd = args.availableEnd;
-      availability.note = args.note;
-    } else {
-      availability = {
-        id: crypto.randomUUID(),
-        eventId: args.eventId,
-        userId: args.userId,
-        availableStart: args.availableStart,
-        availableEnd: args.availableEnd,
-        note: args.note,
-        createdAt: new Date(),
-      };
-      availabilitiesForEvent.push(availability);
-      this.availabilities.set(args.eventId, availabilitiesForEvent);
-    }
-
-    return availability;
-  }
-
-  async listAvailability(eventId: string): Promise<IAvailability[]> {
-    return this.availabilities.get(eventId) || [];
+  async listEvents(): Promise<IEvent[]> {
+    return Array.from(this.events.values());
   }
 
   async reset(): Promise<void> {
     this.events.clear();
-    this.availabilities.clear();
   }
 }
