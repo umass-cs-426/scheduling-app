@@ -7,8 +7,8 @@ import V from "./SchedulingControllerValidator";
 
 export interface ISchedulingController {
     createEvent(req: Request, res: Response): Promise<void>;
-    submitAvailability(req: Request, res: Response): Promise<void>;
-    listAvailability(req: Request, res: Response): Promise<void>;
+    listEvents(req: Request, res: Response): Promise<void>;
+    getEvent(req: Request, res: Response): Promise<void>;
     reset(req: Request, res: Response): Promise<void>;
 }
 
@@ -32,36 +32,18 @@ export default class SchedulingController implements ISchedulingController {
         sendResult(res, result, 201);
     }
 
-    async submitAvailability(req: Request, res: Response): Promise<void> {
-        // Validate eventId
-        if (!V.eventIdSchema.safeParse(req.params.eventId).success) {
-            sendResult(res, err(ApiError.validation("Missing eventId")), 400);
-            return;
-        }
-
-        // Safe to cast because we validated above
-        const eventId = req.params.eventId as string;
-
-        const parsed = V.submitAvailabilitySchema.safeParse(req.body);
-        if (!parsed.success) {
-            sendResult(res, err(ApiError.validation("Invalid request body", parsed.error.flatten())), 400);
-            return;
-        }
-
-        const result = await this.service.submitAvailability(eventId, parsed.data);
+    async listEvents(_req: Request, res: Response): Promise<void> {
+        const result = await this.service.listEvents();
         sendResult(res, result, 200);
     }
 
-    async listAvailability(req: Request, res: Response): Promise<void> {
+    async getEvent(req: Request, res: Response): Promise<void> {
         if (!V.eventIdSchema.safeParse(req.params.eventId).success) {
             sendResult(res, err(ApiError.validation("Missing eventId")), 400);
             return;
         }
 
-        // Safe to cast because we validated above
-        const eventId = req.params.eventId as string;
-
-        const result = await this.service.listAvailability(eventId);
+        const result = await this.service.getEvent(req.params.eventId as string);
         sendResult(res, result, 200);
     }
 
