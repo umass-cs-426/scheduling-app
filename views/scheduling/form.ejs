@@ -1,0 +1,15 @@
+<% layout("layout") %>
+<h1>New Event</h1>
+<form
+  hx-post="/events"
+  hx-target="#event-list"
+  hx-swap="innerHTML"
+  method="post"
+>
+  <label>Title <input name="title" required /></label>
+  <label>Timezone <input name="timezone" value="America/New_York" /></label>
+  <label>Starts <input name="startsAt" type="datetime-local" required /></label>
+  <label>Ends <input name="endsAt" type="datetime-local" required /></label>
+  <button type="submit">Create</button>
+</form>
+<a href="/events">Back to list</a>
