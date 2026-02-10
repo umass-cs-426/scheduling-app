@@ -1,0 +1,11 @@
+<% layout("layout") %>
+<h1>Scheduling</h1>
+<a class="button" href="/events/new">New Event</a>
+<ul class="card-list">
+  <% events.forEach((event) => { %>
+    <li class="card">
+      <a href="/events/<%= event.id %>"><%= event.title %></a>
+      <span><%= event.startsAt %> → <%= event.endsAt %></span>
+    </li>
+  <% }) %>
+</ul>
