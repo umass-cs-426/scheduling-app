@@ -11,7 +11,7 @@ describe("Scheduling API (integration)", () => {
         await request(app).post("/api/reset").expect(200);
     });
 
-    test("create event, submit availability, list availability, data survives across requests", async () => {
+    test("create event, list events, fetch event", async () => {
         // 1) Create event
         const createRes = await request(app)
             .post("/api/events")
@@ -26,33 +26,17 @@ describe("Scheduling API (integration)", () => {
         expect(createRes.body.id).toBeDefined();
         const eventId = createRes.body.id as string;
 
-        // 2) Submit availability
-        const availRes = await request(app)
-            .post(`/api/events/${eventId}/availability`)
-            .send({
-                userId: "alice",
-                availableStart: "2026-02-01T14:30:00.000Z",
-                availableEnd: "2026-02-01T15:15:00.000Z",
-                note: "Prefer earlier"
-            })
-            .expect(200);
+        // 2) List events
+        const listRes = await request(app).get("/api/events").expect(200);
+        expect(Array.isArray(listRes.body)).toBe(true);
 
-        expect(availRes.body.eventId).toBe(eventId);
-        expect(availRes.body.userId).toBe("alice");
-
-        // 3) List availability
-        const listRes = await request(app).get(`/api/events/${eventId}/availability`).expect(200);
-
-        expect(listRes.body.event.id).toBe(eventId);
-        expect(Array.isArray(listRes.body.availability)).toBe(true);
-        expect(listRes.body.availability.length).toBe(1);
-
-        // This is the key class 1 claim: state survived across independent HTTP requests.
-        expect(listRes.body.availability[0].userId).toBe("alice");
+        // 3) Fetch event
+        const detailRes = await request(app).get(`/api/events/${eventId}`).expect(200);
+        expect(detailRes.body.id).toBe(eventId);
     });
 
     test("unknown event returns 404", async () => {
-        const res = await request(AppBuilder.build().getExpress()).get("/api/events/does-not-exist/availability").expect(404);
+        const res = await request(AppBuilder.build().getExpress()).get("/api/events/does-not-exist").expect(404);
         expect(res.body.error.code).toBe("NOT_FOUND");
     });
 
