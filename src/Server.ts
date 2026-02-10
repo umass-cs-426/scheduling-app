@@ -1,4 +1,5 @@
 import AppBuilder from "./AppBuilder";
+import { logger } from "./shared/logger";
 
 // The server class is a simple class that starts the server.
 class Server {
@@ -7,10 +8,10 @@ class Server {
 
         const app = AppBuilder.build().getExpress();
 
-        console.log(`Database URL: ${process.env.DATABASE_URL}`);
+        logger.info(`Database URL: ${process.env.DATABASE_URL}`);
 
         app.listen(port, () => {
-            console.log(`Listening on http://localhost:${port}`);
+            logger.info(`Listening on http://localhost:${port}`);
         });
     }
 }
