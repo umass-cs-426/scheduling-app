@@ -2,14 +2,12 @@ import type ISchedulingRepository from "../repository/ISchedulingRepository";
 import { ApiError } from "../../../lib/error";
 import { Result, err, ok } from "../../../lib/result";
 import ICreateEventInput from "./ICreateEventInput";
-import ISubmitAvailabilityInput from "./ISubmitAvailabilityInput";
 import IEventDTO from "../dto/IEventDTO";
-import IAvailabilityDTO from "../dto/IAvailabilityDTO";
 
 export interface ISchedulingService {
     createEvent(input: ICreateEventInput): Promise<Result<IEventDTO, ApiError>>;
-    submitAvailability(eventId: string, input: ISubmitAvailabilityInput): Promise<Result<IAvailabilityDTO, ApiError>>;
-    listAvailability(eventId: string): Promise<Result<{ event: IEventDTO; availability: IAvailabilityDTO[] }, ApiError>>;
+    listEvents(): Promise<Result<IEventDTO[], ApiError>>;
+    getEvent(eventId: string): Promise<Result<IEventDTO, ApiError>>;
     reset(): Promise<Result<void, ApiError>>;
 }
 
@@ -42,47 +40,15 @@ export default class SchedulingService implements ISchedulingService {
         return ok(this.toEventDTO(event));
     }
 
-    async submitAvailability(
-        eventId: string,
-        input: ISubmitAvailabilityInput
-    ): Promise<Result<IAvailabilityDTO, ApiError>> {
-        const event = await this.repo.getEventById(eventId);
-        if (!event) return err(ApiError.notFound(`No event exists with id ${eventId}`));
-
-        const start = new Date(input.availableStart);
-        const end = new Date(input.availableEnd);
-
-        if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
-            return err(ApiError.validation("availableStart and availableEnd must be valid ISO datetimes"));
-        }
-        if (end <= start) {
-            return err(ApiError.validation("availableEnd must be after availableStart"));
-        }
-
-        // Here is an assumption worth discussing in class:
-        // We allow availability outside the event window. You can tighten this later.
-        // A stricter system would reject availability outside [event.startsAt, event.endsAt].
-        const saved = await this.repo.upsertAvailability({
-            eventId,
-            userId: input.userId,
-            availableStart: start,
-            availableEnd: end,
-            note: input.note,
-        });
-
-        return ok(this.toAvailabilityDTO(saved));
+    async listEvents(): Promise<Result<IEventDTO[], ApiError>> {
+        const events = await this.repo.listEvents();
+        return ok(events.map((event) => this.toEventDTO(event)));
     }
 
-    async listAvailability(eventId: string): Promise<Result<{ event: IEventDTO; availability: IAvailabilityDTO[] }, ApiError>> {
+    async getEvent(eventId: string): Promise<Result<IEventDTO, ApiError>> {
         const event = await this.repo.getEventById(eventId);
         if (!event) return err(ApiError.notFound(`No event exists with id ${eventId}`));
-
-        const rows = await this.repo.listAvailability(eventId);
-
-        return ok({
-            event: this.toEventDTO(event),
-            availability: rows.map((r) => this.toAvailabilityDTO(r))
-        });
+        return ok(this.toEventDTO(event));
     }
 
     async reset(): Promise<Result<void, ApiError>> {
@@ -101,23 +67,4 @@ export default class SchedulingService implements ISchedulingService {
         };
     }
 
-    private toAvailabilityDTO(row: {
-        id: string;
-        eventId: string;
-        userId: string;
-        availableStart: Date;
-        availableEnd: Date;
-        note?: string | null;
-        createdAt: Date;
-    }): IAvailabilityDTO {
-        return {
-            id: row.id,
-            eventId: row.eventId,
-            userId: row.userId,
-            availableStart: row.availableStart.toISOString(),
-            availableEnd: row.availableEnd.toISOString(),
-            note: row.note ?? null,
-            createdAt: row.createdAt.toISOString()
-        };
-    }
 }
