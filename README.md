@@ -4,6 +4,11 @@ The web has become a large and complex area for application development. Access 
 
 **Instructor**: Tim Richards
 
+## Modular Monolith Demo
+
+This branch demonstrates a modular monolith with a single scheduling module,
+a thin shared kernel, and minimal EJS + htmx UI.
+
 ## Repository Structure
 
 - The `README.md` is this file.
