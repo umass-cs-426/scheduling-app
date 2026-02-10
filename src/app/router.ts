@@ -26,6 +26,10 @@ export class AppRouter {
 
         // 2. Common middleware
         this.expressApp.use(express.json());
+        this.expressApp.use(express.urlencoded({ extended: true }));
+        this.expressApp.set("view engine", "ejs");
+        this.expressApp.set("views", "views");
+        this.expressApp.use(express.static("public"));
 
         // 3. Routes
         // Health check - this is used to check if the server is running. We will see this
