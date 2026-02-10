@@ -10,6 +10,10 @@ Content-Type: application/json
     "endsAt": "2026-01-29T01:00:00Z"
 }
 
-### Get Availability
-GET http://localhost:3000/api/events/{{createEvent.response.body.id}}/availability
+### List Events
+GET http://localhost:3000/api/events
+Content-Type: application/json
+
+### Get Event
+GET http://localhost:3000/api/events/{{createEvent.response.body.id}}
 Content-Type: application/json
