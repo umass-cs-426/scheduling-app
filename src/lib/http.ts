@@ -28,3 +28,29 @@ export function sendResult<T>(res: Response, result: Result<T, ApiError>, succes
         }
     });
 }
+
+// Render a template if Ok, otherwise return a JSON error payload.
+export function renderResult<T>(
+    res: Response,
+    result: Result<T, ApiError>,
+    view: string,
+    locals: Record<string, unknown> = {},
+    successStatus = 200
+): void {
+    if (result.ok) {
+        const data = Array.isArray(result.value)
+            ? { events: result.value }
+            : { event: result.value };
+        res.status(successStatus).render(view, { ...locals, ...data });
+        return;
+    }
+
+    const e = result.error;
+    res.status(e.status).json({
+        error: {
+            code: e.code,
+            message: e.message,
+            details: e.details ?? null
+        }
+    });
+}
