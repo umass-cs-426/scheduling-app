@@ -1,6 +1,6 @@
-import ISchedulingRepository from "../../scheduling/repository/ISchedulingRepository";
-import IEvent from "../../scheduling/model/IEvent";
-import IAvailability from "../../scheduling/model/IAvailability";
+import ISchedulingRepository from "./ISchedulingRepository";
+import IEvent from "../model/IEvent";
+import IAvailability from "../model/IAvailability";
 import crypto from "crypto";
 
 // IN-MEMORY REPOSITORY IMPLEMENTATION ///////////////////////////////////////

@@ -1,6 +1,6 @@
 import { AppRouter } from "./app/router";
 import SchedulingModule from "./modules/scheduling/SchedulingModule";
-import { InMemorySchedulingRepo } from "./modules/repository/memory/InMemorySchedulingRepo";
+import { InMemorySchedulingRepo } from "./modules/scheduling/repository/InMemorySchedulingRepo";
 import SchedulingService from "./modules/scheduling/service/SchedulingService";
 import SchedulingController from "./modules/scheduling/controller/SchedulingController";
 
