@@ -1,8 +1,5 @@
 import { AppRouter } from "./app/router";
 import SchedulingModule from "./modules/scheduling/SchedulingModule";
-import { InMemorySchedulingRepo } from "./modules/scheduling/repository/InMemorySchedulingRepo";
-import SchedulingService from "./modules/scheduling/service/SchedulingService";
-import SchedulingController from "./modules/scheduling/controller/SchedulingController";
 
 // A factory function to build the app.
 //
@@ -14,11 +11,7 @@ import SchedulingController from "./modules/scheduling/controller/SchedulingCont
 // makes the code more testable.
 export default class AppBuilder {
     static build(): AppRouter {
-        const repo = new InMemorySchedulingRepo();
-        const service = new SchedulingService(repo);
-        const controller = new SchedulingController(service);
-
-        const schedulingModule = new SchedulingModule(controller);
+        const schedulingModule = SchedulingModule.build();
         return new AppRouter({ modules: [schedulingModule] });
     }
 }
