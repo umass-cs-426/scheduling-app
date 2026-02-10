@@ -10,14 +10,14 @@ export default class SchedulingRoutesBuilder {
         // This is a common pattern when using classes with Express. 
         // It ensures that `this` inside the controller methods refers to the controller instance.
         const createEventHandler = controller.createEvent.bind(controller);
-        const submitAvailabilityHandler = controller.submitAvailability.bind(controller);
-        const listAvailabilityHandler = controller.listAvailability.bind(controller);
+        const listEventsHandler = controller.listEvents.bind(controller);
+        const getEventHandler = controller.getEvent.bind(controller);
         const resetHandler = controller.reset.bind(controller);
 
         // Register routes
         router.post("/events", asyncHandler(createEventHandler));
-        router.post("/events/:eventId/availability", asyncHandler(submitAvailabilityHandler));
-        router.get("/events/:eventId/availability", asyncHandler(listAvailabilityHandler));
+        router.get("/events", asyncHandler(listEventsHandler));
+        router.get("/events/:eventId", asyncHandler(getEventHandler));
         router.post("/reset", asyncHandler(resetHandler));
 
         return router;
