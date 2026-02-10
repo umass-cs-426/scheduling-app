@@ -1,7 +1,6 @@
 import express, { type Express, type NextFunction, type Request, type Response } from "express";
 import { ApiError } from "../lib/error";
-import SchedulingRoutesBuilder from "../modules/scheduling/routes/SchedulingRoutesBuilder";
-import SchedulingController from "../modules/scheduling/controller/SchedulingController";
+import type { AppModule } from "./Module";
 
 // This is the main application class.
 // It is responsible for setting up the Express app and routing. The setup of the 
@@ -21,7 +20,7 @@ import SchedulingController from "../modules/scheduling/controller/SchedulingCon
 export class AppRouter {
     private readonly expressApp: Express;
 
-    constructor(args: { schedulingController: SchedulingController }) {
+    constructor(args: { modules: AppModule[] }) {
         // 1. Initialize the Express app
         this.expressApp = express();
 
@@ -37,7 +36,7 @@ export class AppRouter {
         this.expressApp.get("/health", (_req, res) => res.json({ ok: true }));
 
         // Scheduling API routes
-        this.expressApp.use("/api", SchedulingRoutesBuilder.build(args.schedulingController));
+        args.modules.forEach((module) => module.register(this.expressApp));
 
         // 4. Error handlers
 
