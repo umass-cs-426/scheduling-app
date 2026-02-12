@@ -3,7 +3,10 @@ import path from "node:path";
 
 import { InMemoryEventRepository } from "./event/InMemoryEventRepository";
 import { EventService } from "./event/EventService";
+import { InMemoryAvailabilityRepository } from "./availability/InMemoryAvailabilityRepository";
+import { AvailabilityService } from "./availability/AvailabilityService";
 import { EventController } from "./web/EventController";
+import { AvailabilityController } from "./web/AvailabilityController";
 import { buildRoutes } from "./web/routes";
 
 const app = express();
@@ -20,7 +23,11 @@ const eventRepo = new InMemoryEventRepository();
 const eventService = new EventService(eventRepo);
 const eventController = new EventController(eventService);
 
-app.use(buildRoutes(eventController));
+const availabilityRepo = new InMemoryAvailabilityRepository();
+const availabilityService = new AvailabilityService(availabilityRepo);
+const availabilityController = new AvailabilityController(availabilityService);
+
+app.use(buildRoutes(eventController, availabilityController));
 
 app.listen(3000, () => {
   console.log("Server running at http://localhost:3000");
