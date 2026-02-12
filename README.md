@@ -1,3 +1,12 @@
-# COMPSCI 426 Scalable Web Systems
+# Scheduler Modular Monolith Demo
 
-This repository contains the code and lecture material for this course.
+## Local dev
+npm install
+npm run dev
+
+## REST Client
+Open `requests.http` in VS Code and run requests in order.
+
+## Docker
+docker build -t scheduler .
+docker run -p 3000:3000 scheduler
