@@ -24,7 +24,7 @@ const eventService = new EventService(eventRepo);
 const eventController = new EventController(eventService);
 
 const availabilityRepo = new InMemoryAvailabilityRepository();
-const availabilityService = new AvailabilityService(availabilityRepo);
+const availabilityService = new AvailabilityService(availabilityRepo, eventService);
 const availabilityController = new AvailabilityController(availabilityService);
 
 app.use(buildRoutes(eventController, availabilityController));

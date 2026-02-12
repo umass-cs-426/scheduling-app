@@ -1,6 +1,7 @@
 import { Availability } from "./Availability";
 import { IAvailabilityRepository } from "./AvailabilityRepository";
-import { Result, ok } from "../types/Result";
+import { IEventLookup } from "../event/EventLookup";
+import { Result, ok, err } from "../types/Result";
 
 export interface IAvailabilityService {
   submit(eventId: string, name: string, timeSlot: string): Result<Availability>;
@@ -8,9 +9,16 @@ export interface IAvailabilityService {
 }
 
 export class AvailabilityService implements IAvailabilityService {
-  constructor(private repo: IAvailabilityRepository) {}
+  constructor(
+    private repo: IAvailabilityRepository,
+    private eventLookup: IEventLookup
+  ) {}
 
   submit(eventId: string, name: string, timeSlot: string): Result<Availability> {
+    if (!this.eventLookup.exists(eventId)) {
+      return err(`Event ${eventId} does not exist`);
+    }
+
     const a: Availability = {
       id: crypto.randomUUID(),
       eventId,
