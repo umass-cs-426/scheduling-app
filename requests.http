@@ -24,3 +24,12 @@ Content-Type: application/json
 
 ### List availability
 GET http://localhost:3000/events/REPLACE_EVENT_ID/availability
+
+### Submit availability for fake event id, expect 404
+POST http://localhost:3000/events/not-a-real-id/availability
+Content-Type: application/json
+
+{
+  "name": "Ava",
+  "timeSlot": "Tue 3pm"
+}
