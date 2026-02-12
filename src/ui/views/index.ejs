@@ -41,5 +41,56 @@
 
       <pre id="events"></pre>
     </section>
+
+    <section>
+      <h2>Availability</h2>
+
+      <p class="hint">
+        Paste an eventId here. This is intentionally manual to keep the HTTP boundary visible.
+      </p>
+
+      <input id="eventId" placeholder="eventId" />
+
+      <form
+        id="availabilityForm"
+        hx-post="/events/REPLACE_EVENT_ID/availability"
+        hx-ext="json-enc"
+        hx-headers='{"Content-Type":"application/json"}'
+        hx-swap="none"
+      >
+        <input name="name" placeholder="Your name" />
+        <input name="timeSlot" placeholder="Time slot" />
+        <button type="submit">Submit Availability</button>
+      </form>
+
+      <p>
+        <button
+          id="loadAvailability"
+          hx-get="/events/REPLACE_EVENT_ID/availability"
+          hx-target="#availability"
+          hx-swap="innerHTML"
+        >
+          Load Availability (JSON)
+        </button>
+      </p>
+
+      <pre id="availability"></pre>
+    </section>
+
+    <script>
+      const eventIdInput = document.getElementById("eventId");
+      const loadBtn = document.getElementById("loadAvailability");
+      const form = document.getElementById("availabilityForm");
+
+      function updateUrls() {
+        const id = eventIdInput.value.trim();
+        if (!id) return;
+
+        loadBtn.setAttribute("hx-get", `/events/${id}/availability`);
+        form.setAttribute("hx-post", `/events/${id}/availability`);
+      }
+
+      eventIdInput.addEventListener("input", updateUrls);
+    </script>
   </body>
 </html>
