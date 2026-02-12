@@ -12,6 +12,7 @@ import { buildRoutes } from "./web/routes";
 const app = express();
 
 app.use(express.json());
+app.use(express.static("static"));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(process.cwd(), "src", "ui", "views"));

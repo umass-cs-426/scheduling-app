@@ -1,0 +1,52 @@
+body {
+  font-family: system-ui, Arial, sans-serif;
+  margin: 0;
+  padding: 24px;
+  background: #f6f8fb;
+  color: #1f2937;
+}
+
+h1, h2 {
+  margin-top: 0;
+}
+
+section {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+input, button {
+  font: inherit;
+}
+
+input {
+  padding: 8px;
+  margin: 6px 8px 0 0;
+}
+
+button {
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1d4ed8;
+}
+
+pre {
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 12px;
+  overflow-x: auto;
+}
+
+.hint {
+  color: #4b5563;
+}
