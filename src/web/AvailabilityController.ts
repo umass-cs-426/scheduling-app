@@ -29,6 +29,12 @@ export class AvailabilityController implements IAvailabilityController {
     }
 
     const result = this.service.submit(eventId, name, timeSlot);
-    res.status(201).json(result.ok ? result.value : { error: "unexpected" });
+
+    if (!result.ok) {
+      res.status(404).json({ error: result.error });
+      return;
+    }
+
+    res.status(201).json(result.value);
   }
 }
