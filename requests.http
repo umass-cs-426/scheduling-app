@@ -1,0 +1,14 @@
+### Health check
+GET http://localhost:3000/health
+
+### Create an event
+POST http://localhost:3000/events
+Content-Type: application/json
+
+{
+  "title": "Team Meeting",
+  "date": "2026-02-12"
+}
+
+### List events
+GET http://localhost:3000/events
