@@ -3,9 +3,43 @@
   <head>
     <meta charset="utf-8" />
     <title>Scheduler Demo</title>
+    <script src="https://unpkg.com/htmx.org"></script>
+    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+    <style>
+      body { font-family: system-ui, Arial; padding: 24px; }
+      section { margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #ddd; }
+      input { margin-right: 8px; margin-top: 6px; }
+      button { margin-top: 8px; }
+      pre { background: #f6f6f6; padding: 12px; overflow-x: auto; }
+      .hint { color: #444; font-size: 0.95rem; }
+    </style>
   </head>
   <body>
     <h1>Scheduler Demo</h1>
-    <p>If you can see this page, EJS rendering works.</p>
+
+    <section>
+      <h2>Events</h2>
+
+      <p class="hint">Create an event, then click Load Events to see it.</p>
+
+      <form
+        hx-post="/events"
+        hx-ext="json-enc"
+        hx-headers='{"Content-Type":"application/json"}'
+        hx-swap="none"
+      >
+        <input name="title" placeholder="Title" />
+        <input name="date" placeholder="YYYY-MM-DD" />
+        <button type="submit">Create Event</button>
+      </form>
+
+      <p>
+        <button hx-get="/events" hx-target="#events" hx-swap="innerHTML">
+          Load Events (JSON)
+        </button>
+      </p>
+
+      <pre id="events"></pre>
+    </section>
   </body>
 </html>
