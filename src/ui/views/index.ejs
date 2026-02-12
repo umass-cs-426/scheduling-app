@@ -75,15 +75,29 @@
       const loadBtn = document.getElementById("loadAvailability");
       const form = document.getElementById("availabilityForm");
 
+      function normalizeEventId(raw) {
+        const trimmed = raw.trim();
+        if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
+          return trimmed.slice(1, -1);
+        }
+        return trimmed;
+      }
+
       function updateUrls() {
-        const id = eventIdInput.value.trim();
+        const id = normalizeEventId(eventIdInput.value);
         if (!id) return;
+
+        if (eventIdInput.value !== id) {
+          eventIdInput.value = id;
+        }
 
         loadBtn.setAttribute("hx-get", `/events/${id}/availability`);
         form.setAttribute("hx-post", `/events/${id}/availability`);
       }
 
       eventIdInput.addEventListener("input", updateUrls);
+      loadBtn.addEventListener("click", updateUrls);
+      form.addEventListener("submit", updateUrls);
     </script>
   </body>
 </html>

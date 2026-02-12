@@ -25,6 +25,6 @@ export class EventService implements IEventService, IEventLookup {
   }
 
   exists(eventId: string): boolean {
-    return this.repo.findAll().some((e) => e.id === eventId);
+    return this.repo.findAll().some((e: Event) => e.id === eventId);
   }
 }
