@@ -12,3 +12,15 @@ Content-Type: application/json
 
 ### List events
 GET http://localhost:3000/events
+
+### Submit availability (replace with real event id)
+POST http://localhost:3000/events/REPLACE_EVENT_ID/availability
+Content-Type: application/json
+
+{
+  "name": "Ava",
+  "timeSlot": "Tue 3pm"
+}
+
+### List availability
+GET http://localhost:3000/events/REPLACE_EVENT_ID/availability
