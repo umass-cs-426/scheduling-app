@@ -3,6 +3,7 @@ import { SchedulingRouter } from './SchedulingRouter'
 import { Logger } from '../../logging/Logging'
 import { AvailabilityPort } from '../../availability/AvailabilityPort'
 import { EventPort } from '../../event/EventPort'
+import { CreateAvailabilityInputDto } from '../../availability/dto/CreateAvailabilityInputDto'
 
 class DefaultAvailabilityRouter implements SchedulingRouter {
   private router: Router
@@ -48,15 +49,18 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
         }
 
         // Pass raw input to the port so it can build the input DTO.
-        const result = await this.availabilityPort.submit(
+        const dto = CreateAvailabilityInputDto(
           eventId,
           name,
           startTime,
           endTime,
         )
+        const result = await this.availabilityPort.submit(dto)
 
         if (!result.ok) {
-          this.logger.error(`Error creating availability: ${result.error}`)
+          this.logger.error(
+            `Error creating availability: ${result.error.message}`,
+          )
           this.respondInternalError(res)
           return
         }
@@ -93,7 +97,9 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
         // The port hides service/repo details and returns a typed result.
         const result = await this.availabilityPort.list(eventId)
         if (!result.ok) {
-          this.logger.error(`Error listing availability: ${result.error}`)
+          this.logger.error(
+            `Error listing availability: ${result.error.message}`,
+          )
           this.respondInternalError(res)
           return
         }
@@ -124,7 +130,9 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
         // Ask the port to delete so this route stays thin and focused.
         const result = await this.availabilityPort.delete(availabilityId)
         if (!result.ok) {
-          this.logger.error(`Error deleting availability: ${result.error}`)
+          this.logger.error(
+            `Error deleting availability: ${result.error.message}`,
+          )
           this.respondInternalError(res)
           return
         }
@@ -198,7 +206,9 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
   private async loadAvailabilityByEvent() {
     const eventsResult = await this.eventPort.list()
     if (!eventsResult.ok) {
-      this.logger.error(`Error listing events: ${eventsResult.error}`)
+      this.logger.error(
+        `Error listing events: ${eventsResult.error.message}`,
+      )
       return []
     }
 
@@ -207,7 +217,7 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
       const availabilityResult = await this.availabilityPort.list(event.id)
       if (!availabilityResult.ok) {
         this.logger.error(
-          `Error listing availability for event ${event.id}: ${availabilityResult.error}`,
+          `Error listing availability for event ${event.id}: ${availabilityResult.error.message}`,
         )
         availabilityByEvent.push({ event, availability: [] })
         continue

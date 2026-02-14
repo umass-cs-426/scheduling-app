@@ -8,56 +8,61 @@ import { Logger } from '../logging/Logging'
 import EventRepository from './EventRepository'
 import { CreateEventInputDto } from './dto/CreateEventInputDto'
 import { CreateEventOutputDto } from './dto/CreateEventOutputDto'
-
-type EventPortError = string
+import { PortError } from '../types/PortError'
 
 export interface EventPort {
-  list: () => Promise<Result<Event[], EventPortError>>
-  get: (eventId: string) => Promise<Result<Event, EventPortError>>
-  exists: (eventId: string) => Promise<Result<boolean, EventPortError>>
+  list: () => Promise<Result<Event[], PortError>>
+  get: (eventId: string) => Promise<Result<Event, PortError>>
+  exists: (eventId: string) => Promise<Result<boolean, PortError>>
   create: (
-    title: string,
-    date: string,
-  ) => Promise<Result<CreateEventOutputDto, EventPortError>>
+    dto: CreateEventInputDto,
+  ) => Promise<Result<CreateEventOutputDto, PortError>>
 }
 
 class LocalEventPort implements EventPort {
   constructor(private service: EventService) {}
 
-  async list(): Promise<Result<Event[], EventPortError>> {
+  async list(): Promise<Result<Event[], PortError>> {
     const result = await this.service.listEvents()
     if (!result.ok) {
-      return Err(`Failed to list events: ${result.error.message}`)
+      return Err(
+        PortError('Failed to list events', { cause: result.error }),
+      )
     }
     return Ok(result.value)
   }
 
-  async get(eventId: string): Promise<Result<Event, EventPortError>> {
+  async get(eventId: string): Promise<Result<Event, PortError>> {
     const result = await this.service.getEvent(eventId)
     if (!result.ok) {
-      return Err(`Failed to get event: ${result.error.message}`)
+      return Err(
+        PortError('Failed to get event', { cause: result.error }),
+      )
     }
     return Ok(result.value)
   }
 
-  async exists(eventId: string): Promise<Result<boolean, EventPortError>> {
+  async exists(eventId: string): Promise<Result<boolean, PortError>> {
     const result = await this.service.exists(eventId)
     if (!result.ok) {
-      return Err(`Failed to check event existence: ${result.error.message}`)
+      return Err(
+        PortError('Failed to check event existence', {
+          cause: result.error,
+        }),
+      )
     }
     return Ok(result.value)
   }
 
   async create(
-    title: string,
-    date: string,
-  ): Promise<Result<CreateEventOutputDto, EventPortError>> {
-    // 1) Convert raw input into a DTO so the shape is explicit.
-    const dto = CreateEventInputDto(title, date)
-    // 2) Pass the DTO into the service, which validates and saves.
+    dto: CreateEventInputDto,
+  ): Promise<Result<CreateEventOutputDto, PortError>> {
+    // Pass the DTO into the service, which validates and saves.
     const result = await this.service.createEvent(dto)
     if (!result.ok) {
-      return Err(`Failed to create event: ${result.error.message}`)
+      return Err(
+        PortError('Failed to create event', { cause: result.error }),
+      )
     }
     // 3) Return the output DTO, which defines our response shape.
     return Ok(result.value)

@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import { AvailabilityService } from '../../availability/AvailabilityService'
 import { AvailabilityPort } from '../../availability/AvailabilityPort'
 import { Logger } from '../../logging/Logging'
+import { CreateAvailabilityInputDto } from '../../availability/dto/CreateAvailabilityInputDto'
 
 export interface AvailabilityController {
   listForEvent(req: Request, res: Response): void
@@ -17,7 +18,7 @@ class DefaultAvailabilityController implements AvailabilityController {
   async listForEvent(req: Request, res: Response): Promise<void> {
     const eventId = req.params.eventId as string
     const result = await this.availabilityPort.list(eventId)
-    res.json(result.ok ? result.value : { error: result.error })
+    res.json(result.ok ? result.value : { error: result.error.message })
   }
 
   async submitForEvent(req: Request, res: Response): Promise<void> {
@@ -39,10 +40,11 @@ class DefaultAvailabilityController implements AvailabilityController {
       return
     }
 
-    const result = await this.availabilityPort.submit(eventId, name, start, end)
+    const dto = CreateAvailabilityInputDto(eventId, name, start, end)
+    const result = await this.availabilityPort.submit(dto)
 
     if (!result.ok) {
-      res.status(404).json({ error: result.error })
+      res.status(404).json({ error: result.error.message })
       return
     }
 

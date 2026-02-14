@@ -1,6 +1,7 @@
 import Express, { Router, Request, Response } from 'express'
 import { EventController } from '../controllers/EventController'
 import { EventPort } from '../../event/EventPort'
+import { CreateEventInputDto } from '../../event/dto/CreateEventInputDto'
 import { Logger } from '../../logging/Logging'
 import { SchedulingRouter } from './SchedulingRouter'
 
@@ -42,9 +43,10 @@ class DefaultEventRouter implements SchedulingRouter {
         )
 
         // Pass raw input to the port, which builds the input DTO and validates.
-        const result = await this.eventPort.create(title, date)
+        const dto = CreateEventInputDto(title, date)
+        const result = await this.eventPort.create(dto)
         if (!result.ok) {
-          this.logger.error(`Error creating event: ${result.error}`)
+          this.logger.error(`Error creating event: ${result.error.message}`)
           this.respondInternalError(res)
           return
         }
@@ -71,7 +73,7 @@ class DefaultEventRouter implements SchedulingRouter {
           res.json({ events: events.value })
           return
         }
-        this.logger.error(`Error listing events: ${events.error}`)
+        this.logger.error(`Error listing events: ${events.error.message}`)
         this.respondInternalError(res)
       }),
     )
@@ -88,7 +90,7 @@ class DefaultEventRouter implements SchedulingRouter {
       this.asyncHandler(async (_req, res) => {
         const events = await this.eventPort.list()
         if (!events.ok) {
-          this.logger.error(`Error listing events: ${events.error}`)
+          this.logger.error(`Error listing events: ${events.error.message}`)
           this.respondInternalError(res)
           return
         }
@@ -157,7 +159,7 @@ class DefaultEventRouter implements SchedulingRouter {
   ) {
     const events = await this.eventPort.list()
     if (!events.ok) {
-      this.logger.error(`Error listing events: ${events.error}`)
+      this.logger.error(`Error listing events: ${events.error.message}`)
       this.respondInternalError(res)
       return
     }

@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { EventPort } from '../../event/EventPort'
+import { CreateEventInputDto } from '../../event/dto/CreateEventInputDto'
 
 export interface IEventController {
   list(req: Request, res: Response): void
@@ -34,9 +35,10 @@ export class EventController implements IEventController {
 
     // Pass the raw input to the port, which builds the DTO and handles the
     // flow.
-    const result = await this.eventPort.create(req.body.title, req.body.date)
+    const dto = CreateEventInputDto(req.body.title, req.body.date)
+    const result = await this.eventPort.create(dto)
     if (!result.ok) {
-      res.status(500).json({ error: result.error })
+      res.status(500).json({ error: result.error.message })
       return
     }
 

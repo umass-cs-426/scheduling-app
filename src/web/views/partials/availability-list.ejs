@@ -1,14 +1,28 @@
+<% const parseTime = (time) => {
+  if (!time) return null
+  if (typeof time === 'string') {
+    const [h, m] = time.split(':').map(Number)
+    if (Number.isNaN(h) || Number.isNaN(m)) return null
+    return { hours: h, minutes: m }
+  }
+  if (typeof time.hours === 'number' && typeof time.minutes === 'number') {
+    return { hours: Number(time.hours), minutes: Number(time.minutes) }
+  }
+  return null
+} %>
 <% const formatTime = (time) => {
-  if (!time) return ''
-  const minutes = String(time.minutes).padStart(2, '0')
-  const rawHours = Number(time.hours)
+  const parsed = parseTime(time)
+  if (!parsed) return ''
+  const minutes = String(parsed.minutes).padStart(2, '0')
+  const rawHours = Number(parsed.hours)
   const ampm = rawHours >= 12 ? 'PM' : 'AM'
   const hours12 = rawHours % 12 === 0 ? 12 : rawHours % 12
   return `${hours12}:${minutes} ${ampm}`
 } %>
 <% const minutesFromMidnight = (time) => {
-  if (!time) return 0
-  return (Number(time.hours) * 60) + Number(time.minutes)
+  const parsed = parseTime(time)
+  if (!parsed) return 0
+  return (Number(parsed.hours) * 60) + Number(parsed.minutes)
 } %>
 <% const percentOfDay = (minutes) => (minutes / 1440) * 100 %>
 <% const palette = [

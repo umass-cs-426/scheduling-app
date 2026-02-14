@@ -58,7 +58,7 @@ class BasicAvailabilityService implements AvailabilityService {
     const existsResult = await this.eventPort.exists(eventId)
     if (!existsResult.ok) {
       this.logger.error(
-        `Failed to check event existence: ${existsResult.error}`,
+        `Failed to check event existence: ${existsResult.error.message}`,
       )
       return Err(SubmitServiceError('Failed to check event existence'))
     }

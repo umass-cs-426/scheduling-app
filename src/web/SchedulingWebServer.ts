@@ -157,7 +157,9 @@ class BasicSchedulingWebServer implements SchedulingWebServer {
       if (events.ok) {
         return events.value
       }
-      this.logger.error(`Error listing events for index view: ${events.error}`)
+      this.logger.error(
+        `Error listing events for index view: ${events.error.message}`,
+      )
     } catch (error) {
       this.logger.error(`Error listing events for index view: ${error}`)
     }
