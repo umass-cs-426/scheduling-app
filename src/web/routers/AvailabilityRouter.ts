@@ -39,9 +39,11 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
 
         // Validate required inputs so we can give a helpful error early.
         if (!eventId || !name || !startTime || !endTime) {
-          res.status(400).json({
-            error: 'eventId, name, startTime, and endTime are required',
-          })
+          res
+            .status(400)
+            .json({
+              error: 'eventId, name, startTime, and endTime are required',
+            })
           return
         }
 
@@ -176,6 +178,12 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
     const value = req.query.eventId
     if (typeof value === 'string' && value.trim().length > 0) {
       return value.trim()
+    }
+    if (Array.isArray(value) && value.length > 0) {
+      const first = value[0]
+      if (typeof first === 'string' && first.trim().length > 0) {
+        return first.trim()
+      }
     }
     return null
   }
