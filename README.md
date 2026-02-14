@@ -6,12 +6,14 @@ powered by htmx and Alpine.js.
 
 ## Local Development
 
-1) Install dependencies
+1. Install dependencies
+
 ```
 npm install
 ```
 
-2) Run the dev server
+2. Run the dev server
+
 ```
 npm run dev
 ```
@@ -30,16 +32,19 @@ cp .env.example .env
 Then edit `.env` if you want a different port.
 
 ## REST Client
+
 Open `requests.http` in VS Code and run requests in order.
 
 ## Docker
 
 Build the image:
+
 ```
 docker build -t scheduler .
 ```
 
 Run the container:
+
 ```
 docker run --env-file .env -p 3000:3000 scheduler
 ```
@@ -52,25 +57,15 @@ If you do not have a `.env` file, the app will still use the default port.
 
 If we are new to this repo, the best path is:
 
-1) [01-READING.md](docs/01-READING.md) — the short, guided reading plan.
-2) [02-REPO-GUIDE.md](docs/02-REPO-GUIDE.md) — the big picture of the modular
+1. [01-READING.md](docs/01-READING.md) — the short, guided reading plan.
+2. [02-REPO-GUIDE.md](docs/02-REPO-GUIDE.md) — the big picture of the modular
    monolith.
-3) [03-ARCHITECTURE-NOTES.md](docs/03-ARCHITECTURE-NOTES.md) — diagrams and why
+3. [03-ARCHITECTURE-NOTES.md](docs/03-ARCHITECTURE-NOTES.md) — diagrams and why
    ports matter.
-4) [04-CONCEPTS.md](docs/04-CONCEPTS.md) — critical ideas that make the code
+4. [04-CONCEPTS.md](docs/04-CONCEPTS.md) — critical ideas that make the code
    make sense.
-5) [05-TYPESCRIPT-GUIDE.md](docs/05-TYPESCRIPT-GUIDE.md) — the TypeScript
+5. [05-TYPESCRIPT-GUIDE.md](docs/05-TYPESCRIPT-GUIDE.md) — the TypeScript
    patterns we use.
-6) [06-CONFIGURATION-GUIDE.md](docs/06-CONFIGURATION-GUIDE.md) — tsconfig, npm,
+6. [06-CONFIGURATION-GUIDE.md](docs/06-CONFIGURATION-GUIDE.md) — tsconfig, npm,
    and build flow.
-7) [07-UI-GUIDE.md](docs/07-UI-GUIDE.md) — how the UI works with htmx + Alpine.
-
-### Quick Links
-
-- [01-READING.md](docs/01-READING.md)
-- [02-REPO-GUIDE.md](docs/02-REPO-GUIDE.md)
-- [03-ARCHITECTURE-NOTES.md](docs/03-ARCHITECTURE-NOTES.md)
-- [04-CONCEPTS.md](docs/04-CONCEPTS.md)
-- [05-TYPESCRIPT-GUIDE.md](docs/05-TYPESCRIPT-GUIDE.md)
-- [06-CONFIGURATION-GUIDE.md](docs/06-CONFIGURATION-GUIDE.md)
-- [07-UI-GUIDE.md](docs/07-UI-GUIDE.md)
+7. [07-UI-GUIDE.md](docs/07-UI-GUIDE.md) — how the UI works with htmx + Alpine.
