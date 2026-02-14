@@ -1,14 +1,16 @@
 import Express, { Router } from 'express'
 import { AvailabilityController } from '../controllers/AvailabilityController'
+import { SchedulingRouter } from './SchedulingRouter'
+import { Logger } from '../../logging/Logging'
+import { AvailabilityPort } from '../../availability/AvailabilityPort'
 
-export interface AvailabilityRouter {
-  getRouter(): Router
-}
-
-class DefaultAvailabilityRouter implements AvailabilityRouter {
+class DefaultAvailabilityRouter implements SchedulingRouter {
   private router: Router
 
-  constructor(private availabilityController: AvailabilityController) {
+  constructor(
+    private logger: Logger,
+    private availabilityPort: AvailabilityPort,
+  ) {
     this.router = this.initRouter()
   }
 
@@ -36,8 +38,9 @@ class DefaultAvailabilityRouter implements AvailabilityRouter {
   }
 }
 
-export default function AvailabilityRouter(
-  availabilityController: AvailabilityController,
-): AvailabilityRouter {
-  return new DefaultAvailabilityRouter(availabilityController)
+export function AvailabilityRouter(
+  logger: Logger,
+  availabilityPort: AvailabilityPort,
+): SchedulingRouter {
+  return new DefaultAvailabilityRouter(logger, availabilityPort)
 }

@@ -4,7 +4,6 @@
 import { EventPort } from '../event/EventPort'
 import { Logger } from '../logging/Logging'
 import { Result, Ok, Err } from '../types/Result'
-import { Time } from '../types/Time'
 import { Availability } from './Availability'
 import { AvailabilityRepository } from './AvailabilityRepository'
 import { AvailabilityService } from './AvailabilityService'
@@ -53,7 +52,7 @@ class LocalAvailabilityPort implements AvailabilityPort {
   }
 }
 
-export default function AvailabilityPort(
+export function AvailabilityPort(
   logger: Logger,
   eventPort: EventPort,
 ): AvailabilityPort {

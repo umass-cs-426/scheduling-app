@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { Logger } from '../logging/Logging'
 import Express, { Application, Router } from 'express'
+import { SchedulingRouter } from './routers/SchedulingRouter'
 
 // The SchedulingWebServer class is responsible for setting up and starting the
 // Express web server for the scheduling application.
@@ -9,11 +10,12 @@ export interface SchedulingWebServer {
 }
 
 // The default export function returns an instance of a SchedulingWebServer
-export default function SchedulingWebServer(
+export function SchedulingWebServer(
   logger: Logger,
-  routers: Router[],
+  routers: SchedulingRouter[],
 ): SchedulingWebServer {
-  return new BasicSchedulingWebServer(logger, routers)
+  const nlogger = logger.derive('SchedulingWebServer')
+  return new BasicSchedulingWebServer(nlogger, routers)
 }
 
 // The BasicSchedulingWebServer class implements the SchedulingWebServer
@@ -26,7 +28,7 @@ class BasicSchedulingWebServer implements SchedulingWebServer {
   // array of routers.
   constructor(
     private logger: Logger,
-    routers: Router[],
+    routers: SchedulingRouter[],
   ) {
     this.logger.info('SchedulingWebServer Created')
     this.app = this.initApp(routers)
@@ -55,7 +57,7 @@ class BasicSchedulingWebServer implements SchedulingWebServer {
   // Initializes the Express application by setting up middleware, view engine,
   // and routes. It takes an array of routers as input, which are mounted to
   // the app.
-  private initApp(routers: Router[]): Application {
+  private initApp(routers: SchedulingRouter[]): Application {
     const app = Express()
     this.initMiddleware(app)
     this.initViewEngine(app)
@@ -89,7 +91,7 @@ class BasicSchedulingWebServer implements SchedulingWebServer {
   // additional routers provided as input to the app. This allows the app to
   // handle various HTTP requests and serve the appropriate responses based on
   // the defined routes.
-  private initRoutes(app: Application, routers: Router[]) {
+  private initRoutes(app: Application, routers: SchedulingRouter[]) {
     // Add health route
     app.get('/health', (_req: any, res: any) => res.json({ ok: true }))
 
@@ -98,11 +100,27 @@ class BasicSchedulingWebServer implements SchedulingWebServer {
 
     // Mount provided routers
     const length = routers.length
-    this.logger.info(`Mounting ${length} Routes`)
+    this.logger.info(`Mounting ${length} Routers`)
     routers.forEach((router, index) => {
-      this.logger.info(`Mounting route ${index + 1}`)
-      app.use(router)
+      this.logger.info(`Mounting Router ${index + 1}`)
+      const expressRouter = router.getRouter()
+      this.logRoutes(expressRouter)
+      app.use(expressRouter)
     })
+  }
+
+  logRoutes(router: Router) {
+    for (const layer of router.stack) {
+      if (layer.route) {
+        const methodMap = (layer.route as any).methods
+        const methods: string[] = []
+        for (const method of Object.keys(methodMap)) {
+          methods.push(method.toUpperCase())
+        }
+        const path = layer.route.path
+        this.logger.info(` -- ${methods.join(', ')} ${path}`)
+      }
+    }
   }
 
   start(port: number) {

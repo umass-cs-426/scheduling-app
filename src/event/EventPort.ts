@@ -4,6 +4,8 @@
 import { Result, Ok, Err } from '../types/Result'
 import { EventService } from './EventService'
 import { Event } from './Event'
+import { Logger } from '../logging/Logging'
+import EventRepository from './EventRepository'
 
 type EventPortError = string
 
@@ -56,6 +58,8 @@ class LocalEventPort implements EventPort {
   }
 }
 
-export default function EventPort(service: EventService): EventPort {
+export function EventPort(logger: Logger): EventPort {
+  const repository = EventRepository(logger)
+  const service = EventService(logger, repository)
   return new LocalEventPort(service)
 }

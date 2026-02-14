@@ -8,6 +8,7 @@ export interface Logger {
   info: (message: string) => void
   warn: (message: string) => void
   error: (message: string) => void
+  derive: (name: string) => Logger
 }
 
 // The prefix function generates a log message prefix that includes a timestamp
@@ -35,6 +36,10 @@ class ConsoleLogger implements Logger {
 
   error(message: string): void {
     console.error(`${prefix(this.name, 'ERROR')} ${message}`)
+  }
+
+  derive(name: string): Logger {
+    return new ConsoleLogger(`${this.name}:${name}`)
   }
 }
 

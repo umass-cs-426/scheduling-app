@@ -92,7 +92,7 @@ class BasicEventService implements EventService {
   }
 }
 
-export default function EventService(
+export function EventService(
   logger: Logger,
   repository: EventRepository,
 ): EventService {

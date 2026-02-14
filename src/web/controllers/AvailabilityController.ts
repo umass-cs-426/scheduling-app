@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { AvailabilityService } from '../../availability/AvailabilityService'
 import { AvailabilityPort } from '../../availability/AvailabilityPort'
+import { Logger } from '../../logging/Logging'
 
 export interface AvailabilityController {
   listForEvent(req: Request, res: Response): void
@@ -8,7 +9,10 @@ export interface AvailabilityController {
 }
 
 class DefaultAvailabilityController implements AvailabilityController {
-  constructor(private availabilityPort: AvailabilityPort) {}
+  constructor(
+    private logger: Logger,
+    private availabilityPort: AvailabilityPort,
+  ) {}
 
   async listForEvent(req: Request, res: Response): Promise<void> {
     const eventId = req.params.eventId as string
