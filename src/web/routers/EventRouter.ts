@@ -33,7 +33,7 @@ class DefaultEventRouter implements SchedulingRouter {
     router.post(
       '/create',
       jsonMW,
-      // Create a new event using the eventPort.
+      // Create a new event using the EventPort, which handles the DTO flow.
       this.asyncHandler(async (req, res) => {
         this.logger.info(`Create event hit: ${JSON.stringify(req.body)}`)
         const { title, date } = req.body
@@ -41,6 +41,7 @@ class DefaultEventRouter implements SchedulingRouter {
           `Received request to create event: ${title} on ${date}`,
         )
 
+        // Pass raw input to the port, which builds the input DTO and validates.
         const result = await this.eventPort.create(title, date)
         if (!result.ok) {
           this.logger.error(`Error creating event: ${result.error}`)
@@ -50,13 +51,14 @@ class DefaultEventRouter implements SchedulingRouter {
 
         // If this is an HTMX request, we want to return the updated events
         // fragment so the UI can update. Otherwise, we just return the
-        // created event as JSON.
+        // output DTO as JSON.
         if (this.isHtmxRequest(req)) {
           await this.renderEventsFragment(res, true)
           return
         }
 
-        res.json({ event: result.value })
+        // The port returns a CreateEventOutputDto so the response shape is clear.
+        res.json(result.value)
       }),
     )
 
@@ -127,7 +129,7 @@ class DefaultEventRouter implements SchedulingRouter {
   // in async route handlers. There are libraries like express-async-errors
   // that can automate this, but I wanted to show it explicitly here.
   private asyncHandler(fn: (req: Request, res: Response) => Promise<void>) {
-    return async (req: Express.Request, res: Express.Response) => {
+    return async (req: Request, res: Response) => {
       try {
         await fn(req, res)
       } catch (error) {
@@ -137,19 +139,20 @@ class DefaultEventRouter implements SchedulingRouter {
     }
   }
 
-  private respondInternalError(res: Express.Response) {
+  private respondInternalError(res: Response) {
     res.status(500).json({ error: 'Internal server error' })
   }
 
-  private isHtmxRequest(req: Express.Request): boolean {
+  private isHtmxRequest(req: Request): boolean {
     return req.get('HX-Request') === 'true'
   }
 
-  // This method renders the events fragment, which is a partial view that contains
-  // the list of events. This is used in response to HTMX requests so that we can
-  // update just the events list in the UI without reloading the entire page.
+  // This method renders the events fragment, which is a partial view that
+  // contains the list of events. This is used in response to HTMX requests so
+  // that we can update just the events list in the UI without reloading the
+  // entire page.
   private async renderEventsFragment(
-    res: Express.Response,
+    res: Response,
     triggerAvailabilityRefresh: boolean,
   ) {
     const events = await this.eventPort.list()
@@ -164,7 +167,7 @@ class DefaultEventRouter implements SchedulingRouter {
     res.render('partials/events-fragment', { events: events.value })
   }
 
-  private readSelectedEventId(req: Express.Request): string | null {
+  private readSelectedEventId(req: Request): string | null {
     const value = req.query.eventId
     if (typeof value === 'string' && value.trim().length > 0) {
       return value.trim()

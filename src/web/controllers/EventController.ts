@@ -21,6 +21,7 @@ export class EventController implements IEventController {
   async create(req: Request, res: Response): Promise<void> {
     const { title, date } = req.body
 
+    // Validate the raw request data so we can return a helpful 400 response.
     if (typeof title !== 'string' || title.trim() === '') {
       res.status(400).json({ error: 'title is required' })
       return
@@ -31,12 +32,15 @@ export class EventController implements IEventController {
       return
     }
 
+    // Pass the raw input to the port, which builds the DTO and handles the
+    // flow.
     const result = await this.eventPort.create(req.body.title, req.body.date)
     if (!result.ok) {
       res.status(500).json({ error: result.error })
       return
     }
 
+    // The port returns a CreateEventOutputDto that defines the response shape.
     res.status(201).json(result.value)
   }
 }

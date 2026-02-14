@@ -2,6 +2,9 @@ import { Logger } from '../logging/Logging'
 import { Err, Ok, Result } from '../types/Result'
 import { Event } from './Event'
 import { EventRepository } from './EventRepository'
+import { CreateEventInputDto } from './dto/CreateEventInputDto'
+import { CreateEventOutputDto } from './dto/CreateEventOutputDto'
+import { ValidatedEventDto } from './dto/ValidatedEventDto'
 
 export type BaseEventServiceError = { message: string }
 export type CreateEventError = BaseEventServiceError & {
@@ -32,11 +35,10 @@ function ExistsEventError(message: string): ExistsEventError {
 }
 
 export interface EventService {
-  // Creates a new event with the given title and date
+  // Creates a new event using a DTO so we can track the "shape" of input data.
   createEvent(
-    title: string,
-    date: string,
-  ): Promise<Result<Event, EventServiceError>>
+    dto: CreateEventInputDto,
+  ): Promise<Result<CreateEventOutputDto, EventServiceError>>
   // Get an event by ID
   getEvent(eventId: string): Promise<Result<Event, EventServiceError>>
   // Lists all events
@@ -61,16 +63,24 @@ class BasicEventService implements EventService {
   }
 
   async createEvent(
-    title: string,
-    date: string,
-  ): Promise<Result<Event, EventServiceError>> {
+    dto: CreateEventInputDto,
+  ): Promise<Result<CreateEventOutputDto, EventServiceError>> {
+    // 1) Validate the raw input and convert it into a "trusted" DTO.
+    const validated = this.validateInput(dto)
+    if (!validated.ok) {
+      return validated
+    }
+
+    // 2) Create the event from the validated data and save it.
     const id = Math.random().toString(36).substring(2, 9)
-    const event = { id, title, date }
+    const event = { id, title: validated.value.title, date: validated.value.date }
     const saveResult = await this.repository.save(event)
     if (!saveResult.ok) {
       return Err(CreateEventError(saveResult.error.message))
     }
-    return Ok(event)
+
+    // 3) Return a DTO that defines our response shape.
+    return Ok(CreateEventOutputDto(event))
   }
 
   async listEvents(): Promise<Result<Event[], EventServiceError>> {
@@ -89,6 +99,24 @@ class BasicEventService implements EventService {
     } else {
       return Err(ExistsEventError(result.error.message))
     }
+  }
+
+  // Small validation helper that ensures we only store clean, trimmed strings.
+  private validateInput(
+    dto: CreateEventInputDto,
+  ): Result<ValidatedEventDto, EventServiceError> {
+    const title = dto.title?.trim()
+    const date = dto.date?.trim()
+
+    if (!title) {
+      return Err(CreateEventError('title is required'))
+    }
+
+    if (!date) {
+      return Err(CreateEventError('date is required'))
+    }
+
+    return Ok(ValidatedEventDto(title, date))
   }
 }
 

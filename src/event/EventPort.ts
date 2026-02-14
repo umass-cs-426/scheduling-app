@@ -6,6 +6,8 @@ import { EventService } from './EventService'
 import { Event } from './Event'
 import { Logger } from '../logging/Logging'
 import EventRepository from './EventRepository'
+import { CreateEventInputDto } from './dto/CreateEventInputDto'
+import { CreateEventOutputDto } from './dto/CreateEventOutputDto'
 
 type EventPortError = string
 
@@ -16,7 +18,7 @@ export interface EventPort {
   create: (
     title: string,
     date: string,
-  ) => Promise<Result<Event, EventPortError>>
+  ) => Promise<Result<CreateEventOutputDto, EventPortError>>
 }
 
 class LocalEventPort implements EventPort {
@@ -49,11 +51,15 @@ class LocalEventPort implements EventPort {
   async create(
     title: string,
     date: string,
-  ): Promise<Result<Event, EventPortError>> {
-    const result = await this.service.createEvent(title, date)
+  ): Promise<Result<CreateEventOutputDto, EventPortError>> {
+    // 1) Convert raw input into a DTO so the shape is explicit.
+    const dto = CreateEventInputDto(title, date)
+    // 2) Pass the DTO into the service, which validates and saves.
+    const result = await this.service.createEvent(dto)
     if (!result.ok) {
       return Err(`Failed to create event: ${result.error.message}`)
     }
+    // 3) Return the output DTO, which defines our response shape.
     return Ok(result.value)
   }
 }

@@ -1,4 +1,4 @@
-import Express, { Router } from 'express'
+import Express, { Request, Response, Router } from 'express'
 import { SchedulingRouter } from './SchedulingRouter'
 import { Logger } from '../../logging/Logging'
 import { AvailabilityPort } from '../../availability/AvailabilityPort'
@@ -32,7 +32,7 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
     router.post(
       '/create',
       jsonMW,
-      // Create a new availability for an event.
+      // Create a new availability using the port, which handles the DTO flow.
       this.asyncHandler(async (req, res) => {
         const payload = req.body || {}
         const { eventId, name, startTime, endTime } = payload
@@ -47,6 +47,7 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
           return
         }
 
+        // Pass raw input to the port so it can build the input DTO.
         const result = await this.availabilityPort.submit(
           eventId,
           name,
@@ -65,6 +66,7 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
           return
         }
 
+        // The port returns a DTO-shaped response for consistency.
         res.json({ availability: result.value })
       }),
     )
@@ -88,6 +90,7 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
           return
         }
 
+        // The port hides service/repo details and returns a typed result.
         const result = await this.availabilityPort.list(eventId)
         if (!result.ok) {
           this.logger.error(`Error listing availability: ${result.error}`)
@@ -118,6 +121,7 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
         }
 
         const availabilityId = Array.isArray(id) ? id[0] : id
+        // Ask the port to delete so this route stays thin and focused.
         const result = await this.availabilityPort.delete(availabilityId)
         if (!result.ok) {
           this.logger.error(`Error deleting availability: ${result.error}`)
@@ -152,9 +156,9 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
 
   // Wrap async handlers so we can catch errors and return a 500 consistently.
   private asyncHandler(
-    fn: (req: Express.Request, res: Express.Response) => Promise<void>,
+    fn: (req: Request, res: Response) => Promise<void>,
   ) {
-    return async (req: Express.Request, res: Express.Response) => {
+    return async (req: Request, res: Response) => {
       try {
         await fn(req, res)
       } catch (error) {
@@ -165,17 +169,17 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
   }
 
   // Small helper to keep error responses consistent.
-  private respondInternalError(res: Express.Response) {
+  private respondInternalError(res: Response) {
     res.status(500).json({ error: 'Internal server error' })
   }
 
   // htmx sets HX-Request=true, which we can use to choose HTML vs JSON.
-  private isHtmxRequest(req: Express.Request): boolean {
+  private isHtmxRequest(req: Request): boolean {
     return req.get('HX-Request') === 'true'
   }
 
   // Read eventId from a query string like /availability/read?eventId=abc
-  private readEventIdFromQuery(req: Express.Request): string | null {
+  private readEventIdFromQuery(req: Request): string | null {
     const value = req.query.eventId
     if (typeof value === 'string' && value.trim().length > 0) {
       return value.trim()
@@ -217,7 +221,7 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
     return availabilityByEvent
   }
 
-  private async renderAvailabilityFragment(res: Express.Response) {
+  private async renderAvailabilityFragment(res: Response) {
     const availabilityByEvent = await this.loadAvailabilityByEvent()
     res.render('partials/availability-fragment', { availabilityByEvent })
   }
