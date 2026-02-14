@@ -116,6 +116,23 @@ Why it matters:
 Even though this file is large and mostly machine‑generated, it is a key part of
 real‑world Node.js projects.
 
+## .env Files (Environment Configuration)
+
+We use a `.env` file to store configuration that can change between machines,
+such as the port the server listens on. This keeps configuration out of the
+code and makes the app easier to run in different environments.
+
+In this project:
+
+- `.env` is ignored by Git, so we do not accidentally commit secrets.
+- [`.env.example`](../.env.example) shows the expected variables and format.
+- We load the file at startup using `dotenv` in
+  [`src/app.ts`](../src/app.ts).
+
+This is a gentle introduction to the idea that code and configuration should
+be separate. Later, when we introduce containers and deployment, this habit
+will make things much easier.
+
 ## How These Files Work Together
 
 Think of it as a small pipeline:
