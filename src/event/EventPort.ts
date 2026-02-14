@@ -8,38 +8,47 @@ import { Event } from './Event'
 type EventPortError = string
 
 export interface EventPort {
-  list: () => Result<Event[], EventPortError>
-  get: (eventId: string) => Result<Event, EventPortError>
-  exists: (eventId: string) => Result<boolean, EventPortError>
-  create: (title: string, date: string) => Result<Event, EventPortError>
+  list: () => Promise<Result<Event[], EventPortError>>
+  get: (eventId: string) => Promise<Result<Event, EventPortError>>
+  exists: (eventId: string) => Promise<Result<boolean, EventPortError>>
+  create: (
+    title: string,
+    date: string,
+  ) => Promise<Result<Event, EventPortError>>
 }
 
 class LocalEventPort implements EventPort {
   constructor(private service: EventService) {}
 
-  list(): Result<Event[], EventPortError> {
-    const result = this.service.listEvents()
+  async list(): Promise<Result<Event[], EventPortError>> {
+    const result = await this.service.listEvents()
     if (!result.ok) {
       return Err(`Failed to list events: ${result.error.message}`)
     }
     return Ok(result.value)
   }
 
-  get(eventId: string): Result<Event, EventPortError> {
-    const result = this.service.getEvent(eventId)
+  async get(eventId: string): Promise<Result<Event, EventPortError>> {
+    const result = await this.service.getEvent(eventId)
     if (!result.ok) {
       return Err(`Failed to get event: ${result.error.message}`)
     }
     return Ok(result.value)
   }
 
-  exists(eventId: string): Result<boolean, EventPortError> {
-    const result = this.service.getEvent(eventId)
-    return Ok(!result.ok ? false : true)
+  async exists(eventId: string): Promise<Result<boolean, EventPortError>> {
+    const result = await this.service.exists(eventId)
+    if (!result.ok) {
+      return Err(`Failed to check event existence: ${result.error.message}`)
+    }
+    return Ok(result.value)
   }
 
-  create(title: string, date: string): Result<Event, EventPortError> {
-    const result = this.service.createEvent(title, date)
+  async create(
+    title: string,
+    date: string,
+  ): Promise<Result<Event, EventPortError>> {
+    const result = await this.service.createEvent(title, date)
     if (!result.ok) {
       return Err(`Failed to create event: ${result.error.message}`)
     }

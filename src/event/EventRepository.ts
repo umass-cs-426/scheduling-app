@@ -17,10 +17,10 @@ function FindAllRepoError(message: string): FindAllRepoError {
 }
 
 export interface EventRepository {
-  save(event: Event): Result<Event, RepositoryError>
-  find(eventId: string): Result<Event, RepositoryError>
-  findAll(): Result<Event[], RepositoryError>
-  exists(eventId: string): Result<boolean, RepositoryError>
+  save(event: Event): Promise<Result<Event, RepositoryError>>
+  find(eventId: string): Promise<Result<Event, RepositoryError>>
+  findAll(): Promise<Result<Event[], RepositoryError>>
+  exists(eventId: string): Promise<Result<boolean, RepositoryError>>
 }
 
 class InMemoryEventRepository implements EventRepository {
@@ -30,7 +30,7 @@ class InMemoryEventRepository implements EventRepository {
     logger.info('InMemoryEventRepository initialized')
   }
 
-  find(eventId: string): Result<Event, RepositoryError> {
+  async find(eventId: string): Promise<Result<Event, RepositoryError>> {
     try {
       this.logger.info(`Finding event ID: ${eventId}`)
       const event = this.storage.get(eventId)
@@ -44,7 +44,7 @@ class InMemoryEventRepository implements EventRepository {
     }
   }
 
-  save(event: Event): Result<Event, RepositoryError> {
+  async save(event: Event): Promise<Result<Event, RepositoryError>> {
     try {
       this.logger.info(`Saving event: ${JSON.stringify(event)}`)
       this.storage.set(event.id, event)
@@ -55,7 +55,7 @@ class InMemoryEventRepository implements EventRepository {
     }
   }
 
-  findAll(): Result<Event[], RepositoryError> {
+  async findAll(): Promise<Result<Event[], RepositoryError>> {
     try {
       this.logger.info('Retrieving all events')
       return Ok(Array.from(this.storage.values()))
@@ -65,7 +65,7 @@ class InMemoryEventRepository implements EventRepository {
     }
   }
 
-  exists(eventId: string): Result<boolean, RepositoryError> {
+  async exists(eventId: string): Promise<Result<boolean, RepositoryError>> {
     try {
       this.logger.info(`Checking existence of event ID: ${eventId}`)
       return Ok(this.storage.has(eventId))

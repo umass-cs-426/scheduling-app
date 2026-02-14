@@ -33,13 +33,16 @@ function ExistsEventError(message: string): ExistsEventError {
 
 export interface EventService {
   // Creates a new event with the given title and date
-  createEvent(title: string, date: string): Result<Event, EventServiceError>
+  createEvent(
+    title: string,
+    date: string,
+  ): Promise<Result<Event, EventServiceError>>
   // Get an event by ID
-  getEvent(eventId: string): Result<Event, EventServiceError>
+  getEvent(eventId: string): Promise<Result<Event, EventServiceError>>
   // Lists all events
-  listEvents(): Result<Event[], EventServiceError>
+  listEvents(): Promise<Result<Event[], EventServiceError>>
   // Checks if an event with the given ID exists
-  exists(eventId: string): Result<boolean, EventServiceError>
+  exists(eventId: string): Promise<Result<boolean, EventServiceError>>
 }
 
 class BasicEventService implements EventService {
@@ -48,8 +51,8 @@ class BasicEventService implements EventService {
     private repository: EventRepository,
   ) {}
 
-  getEvent(eventId: string): Result<Event, EventServiceError> {
-    const result = this.repository.find(eventId)
+  async getEvent(eventId: string): Promise<Result<Event, EventServiceError>> {
+    const result = await this.repository.find(eventId)
     if (result.ok) {
       return result
     } else {
@@ -57,18 +60,21 @@ class BasicEventService implements EventService {
     }
   }
 
-  createEvent(title: string, date: string): Result<Event, EventServiceError> {
+  async createEvent(
+    title: string,
+    date: string,
+  ): Promise<Result<Event, EventServiceError>> {
     const id = Math.random().toString(36).substring(2, 9)
     const event = { id, title, date }
-    const saveResult = this.repository.save(event)
+    const saveResult = await this.repository.save(event)
     if (!saveResult.ok) {
       return Err(CreateEventError(saveResult.error.message))
     }
     return Ok(event)
   }
 
-  listEvents(): Result<Event[], EventServiceError> {
-    const result = this.repository.findAll()
+  async listEvents(): Promise<Result<Event[], EventServiceError>> {
+    const result = await this.repository.findAll()
     if (result.ok) {
       return result
     } else {
@@ -76,8 +82,8 @@ class BasicEventService implements EventService {
     }
   }
 
-  exists(eventId: string): Result<boolean, EventServiceError> {
-    const result = this.repository.exists(eventId)
+  async exists(eventId: string): Promise<Result<boolean, EventServiceError>> {
+    const result = await this.repository.exists(eventId)
     if (result.ok) {
       return result
     } else {

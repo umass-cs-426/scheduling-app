@@ -9,8 +9,8 @@ export interface IEventController {
 export class EventController implements IEventController {
   constructor(private eventPort: EventPort) {}
 
-  list(_req: Request, res: Response): void {
-    const result = this.eventPort.list()
+  async list(req: Request, res: Response): Promise<void> {
+    const result = await this.eventPort.list()
     if (!result.ok) {
       res.status(500).json({ error: result.error })
       return
@@ -18,7 +18,7 @@ export class EventController implements IEventController {
     res.json(result.value)
   }
 
-  create(req: Request, res: Response): void {
+  async create(req: Request, res: Response): Promise<void> {
     const { title, date } = req.body
 
     if (typeof title !== 'string' || title.trim() === '') {
@@ -31,9 +31,12 @@ export class EventController implements IEventController {
       return
     }
 
-    // const event = this.service.createEvent(title, date)
-    
+    const result = await this.eventPort.create(req.body.title, req.body.date)
+    if (!result.ok) {
+      res.status(500).json({ error: result.error })
+      return
+    }
 
-    res.status(201).json(event)
+    res.status(201).json(result.value)
   }
 }
