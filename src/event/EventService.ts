@@ -1,30 +1,23 @@
-import { Event } from "./Event";
-import { IEventRepository } from "./EventRepository";
-import { IEventLookup } from "./EventLookup";
+import Event from './Event'
+import EventRepository from './EventRepository'
 
-export interface IEventService {
-  createEvent(title: string, date: string): Event;
-  listEvents(): Event[];
+export type EventService = {
+  // Creates a new event with the given title and date
+  createEvent(title: string, date: string): Event
+  // Lists all events
+  listEvents(): Event[]
 }
 
-export class EventService implements IEventService, IEventLookup {
-  constructor(private repo: IEventRepository) {}
-
+const EventService: EventService = {
   createEvent(title: string, date: string): Event {
-    const event: Event = {
-      id: crypto.randomUUID(),
-      title,
-      date,
-    };
-    this.repo.save(event);
-    return event;
-  }
+    const id = Math.random().toString(36).substring(2, 9)
+    EventRepository.save({ id, title, date })
+    return { id, title, date }
+  },
 
   listEvents(): Event[] {
-    return this.repo.findAll();
-  }
-
-  exists(eventId: string): boolean {
-    return this.repo.findAll().some((e: Event) => e.id === eventId);
-  }
+    return EventRepository.findAll()
+  },
 }
+
+export default EventService

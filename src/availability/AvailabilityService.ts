@@ -1,35 +1,73 @@
-import { Availability } from "./Availability";
-import { IAvailabilityRepository } from "./AvailabilityRepository";
-import { IEventLookup } from "../event/EventLookup";
-import { Result, ok, err } from "../types/Result";
+import { Logger } from '../logging/Logging'
+import { Time } from '../types/Time'
+import { Ok, Err, Result } from '../types/Result'
+import Availability from './Availability'
+import AvailabilityRepository from './AvailabilityRepository'
 
-export interface IAvailabilityService {
-  submit(eventId: string, name: string, timeSlot: string): Result<Availability>;
-  list(eventId: string): Availability[];
+type BaseServiceError = { message: string }
+type SubmitServiceError = BaseServiceError & { kind: 'SubmitServiceError' }
+type ListServiceError = BaseServiceError & { kind: 'ListServiceError' }
+
+export type ServiceError = SubmitServiceError | ListServiceError
+
+function SubmitServiceError(message: string): SubmitServiceError {
+  return { kind: 'SubmitServiceError', message }
 }
 
-export class AvailabilityService implements IAvailabilityService {
+function ListServiceError(message: string): ListServiceError {
+  return { kind: 'ListServiceError', message }
+}
+
+interface AvailabilityService {
+  submit: (
+    eventId: string,
+    name: string,
+    startTime: Time,
+    endTime: Time,
+  ) => Result<Availability, ServiceError>
+  list: (eventId: string) => Result<Availability[], ServiceError>
+}
+
+class BasicAvailabilityService implements AvailabilityService {
   constructor(
-    private repo: IAvailabilityRepository,
-    private eventLookup: IEventLookup
+    private logger: Logger,
+    private repository: AvailabilityRepository,
   ) {}
 
-  submit(eventId: string, name: string, timeSlot: string): Result<Availability> {
-    if (!this.eventLookup.exists(eventId)) {
-      return err(`Event ${eventId} does not exist`);
+  submit(
+    eventId: string,
+    name: string,
+    startTime: Time,
+    endTime: Time,
+  ): Result<Availability, ServiceError> {
+    const availability = Availability(name, eventId, startTime, endTime)
+    this.logger.info(`Submitting availability: ${JSON.stringify(availability)}`)
+    const result = this.repository.save(availability)
+    if (!result.ok) {
+      this.logger.error(
+        `Failed to submit availability: ${result.error.message}`,
+      )
+      return Err(SubmitServiceError('Failed to submit availability'))
     }
-
-    const a: Availability = {
-      id: crypto.randomUUID(),
-      eventId,
-      name,
-      timeSlot,
-    };
-    this.repo.save(a);
-    return ok(a);
+    return result
   }
 
-  list(eventId: string): Availability[] {
-    return this.repo.findByEventId(eventId);
+  list(eventId: string): Result<Availability[], ServiceError> {
+    this.logger.info(`Listing availabilities for event ID: ${eventId}`)
+    const result = this.repository.findByEventId(eventId)
+    if (!result.ok) {
+      this.logger.error(
+        `Failed to list availabilities: ${result.error.message}`,
+      )
+      return Err(ListServiceError('Failed to list availabilities'))
+    }
+    return result
   }
+}
+
+export function AvailabilityService(
+  logger: Logger,
+  repo: AvailabilityRepository,
+): AvailabilityService {
+  return new BasicAvailabilityService(logger, repo)
 }
