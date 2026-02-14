@@ -1,6 +1,7 @@
-import Availability from './Availability'
+import { Availability } from './Availability'
 import { Result, Ok, Err } from '../types/Result'
 import { Logger } from '../logging/Logging'
+import { ValidatedAvailabilityDto } from './dto/ValidatedAvailabilityDto'
 
 // Define the RepositoryError type, which represents errors that can occur in
 // the repository. This type can be extended to include specific error types
@@ -31,8 +32,8 @@ function FailedToFindError(message: string): FailedToFindError {
 
 // The AvailabilityRepository interface defines the methods that any
 // implementation of the repository must provide.
-export default interface AvailabilityRepository {
-  save: (a: Availability) => Result<Availability, RepositoryError>
+export interface AvailabilityRepository {
+  save: (a: ValidatedAvailabilityDto) => Result<Availability, RepositoryError>
   delete: (id: string) => Result<Availability, RepositoryError>
   find: (id: string) => Result<Availability, RepositoryError>
   findByEventId: (eventId: string) => Result<Availability[], RepositoryError>
@@ -62,11 +63,14 @@ class InMemoryAvailabilityRepository implements AvailabilityRepository {
   // storage and return an Ok result. In a real application, this would involve
   // saving the availability to a database, and we would need to handle
   // potential errors that could occur during the save operation.
-  save(a: Availability): Result<Availability, RepositoryError> {
+  save(dto: ValidatedAvailabilityDto): Result<Availability, RepositoryError> {
     try {
-      this.logger.info(`Saving availability: ${JSON.stringify(a)}`)
-      this.storage.set(a.id, a)
-      return Ok(a)
+      // Fake ID generation for in-memory purposes.
+      const id = crypto.randomUUID()
+      const availability = this.fromDTO(dto, id)
+      this.logger.info(`Saving availability: ${JSON.stringify(availability)}`)
+      this.storage.set(id, availability)
+      return Ok(availability)
     } catch (error) {
       this.logger.error(`Failed to save availability: ${error}`)
       return Err(FailedToSaveError(`Failed to save availability: ${error}`))
@@ -169,6 +173,10 @@ class InMemoryAvailabilityRepository implements AvailabilityRepository {
         ),
       )
     }
+  }
+
+  private fromDTO(dto: ValidatedAvailabilityDto, id: string): Availability {
+    return Availability(id, dto.name, dto.eventId, dto.startTime, dto.endTime)
   }
 }
 

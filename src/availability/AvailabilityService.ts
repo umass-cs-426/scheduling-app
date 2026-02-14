@@ -1,30 +1,37 @@
 import { Logger } from '../logging/Logging'
 import { Time } from '../types/Time'
-import { Ok, Err, Result } from '../types/Result'
-import Availability from './Availability'
-import AvailabilityRepository from './AvailabilityRepository'
+import { Err, Ok, Result } from '../types/Result'
+import { Availability } from './Availability'
+import { AvailabilityRepository } from './AvailabilityRepository'
 import { EventPort } from '../event/EventPort'
+import { CreateAvailabilityInputDto } from './dto/CreateAvailabilityInputDto'
+import { ValidatedAvailabilityDto } from './dto/ValidatedAvailabilityDto'
 
 type BaseServiceError = { message: string }
 type SubmitServiceError = BaseServiceError & { kind: 'SubmitServiceError' }
 type ListServiceError = BaseServiceError & { kind: 'ListServiceError' }
+type ValidateTimeError = BaseServiceError & { kind: 'ValidateTimeError' }
 
-export type ServiceError = SubmitServiceError | ListServiceError
+export type ServiceError =
+  | SubmitServiceError
+  | ListServiceError
+  | ValidateTimeError
 
 function SubmitServiceError(message: string): SubmitServiceError {
   return { kind: 'SubmitServiceError', message }
+}
+
+function ValidateTimeError(message: string): ValidateTimeError {
+  return { kind: 'ValidateTimeError', message }
 }
 
 function ListServiceError(message: string): ListServiceError {
   return { kind: 'ListServiceError', message }
 }
 
-interface AvailabilityService {
+export interface AvailabilityService {
   submit: (
-    eventId: string,
-    name: string,
-    startTime: Time,
-    endTime: Time,
+    dto: CreateAvailabilityInputDto,
   ) => Result<Availability, ServiceError>
   list: (eventId: string) => Result<Availability[], ServiceError>
 }
@@ -36,12 +43,8 @@ class BasicAvailabilityService implements AvailabilityService {
     private repository: AvailabilityRepository,
   ) {}
 
-  submit(
-    eventId: string,
-    name: string,
-    startTime: Time,
-    endTime: Time,
-  ): Result<Availability, ServiceError> {
+  submit(dto: CreateAvailabilityInputDto): Result<Availability, ServiceError> {
+    const { eventId, name, startTime, endTime } = dto
     // Check if the event exists using the EventPort
     const existsResult = this.eventPort.exists(eventId)
     if (!existsResult.ok) {
@@ -51,7 +54,29 @@ class BasicAvailabilityService implements AvailabilityService {
       return Err(SubmitServiceError('Failed to check event existence'))
     }
 
-    const availability = Availability(name, eventId, startTime, endTime)
+    // Validate start time and convert into Time type
+    const startTimeResult = this.validateTime(startTime)
+    if (!startTimeResult.ok) {
+      this.logger.error(startTimeResult.error.message)
+      return startTimeResult
+    }
+
+    // Validate end time and convert into Time type
+    const endTimeResult = this.validateTime(endTime)
+    if (!endTimeResult.ok) {
+      this.logger.error(endTimeResult.error.message)
+      return endTimeResult
+    }
+
+    // Create the validated availability object
+    const availability = ValidatedAvailabilityDto(
+      name,
+      eventId,
+      startTimeResult.value,
+      endTimeResult.value,
+    )
+
+    // Save the availability to the repository
     this.logger.info(`Submitting availability: ${JSON.stringify(availability)}`)
     const result = this.repository.save(availability)
     if (!result.ok) {
@@ -60,6 +85,8 @@ class BasicAvailabilityService implements AvailabilityService {
       )
       return Err(SubmitServiceError('Failed to submit availability'))
     }
+
+    // Finally, return the created availability
     return result
   }
 
@@ -73,6 +100,14 @@ class BasicAvailabilityService implements AvailabilityService {
       return Err(ListServiceError('Failed to list availabilities'))
     }
     return result
+  }
+
+  private validateTime(timeStr: string): Result<Time, ServiceError> {
+    const timeResult = Time.of(timeStr)
+    if (!timeResult.ok) {
+      return Err(ValidateTimeError(`Invalid time format: ${timeResult.error}`))
+    }
+    return Ok(timeResult.value)
   }
 }
 

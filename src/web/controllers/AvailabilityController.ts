@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
-import AvailabilityService from '../availability/AvailabilityService'
+import { AvailabilityService } from '../../availability/AvailabilityService'
+import { AvailabilityPort } from '../../availability/AvailabilityPort'
 
 export interface AvailabilityController {
   listForEvent(req: Request, res: Response): void
@@ -7,28 +8,34 @@ export interface AvailabilityController {
 }
 
 class DefaultAvailabilityController implements AvailabilityController {
-  constructor(private service: AvailabilityService) {}
+  constructor(private availabilityPort: AvailabilityPort) {}
 
-  listForEvent(req: Request, res: Response): void {
+  async listForEvent(req: Request, res: Response): Promise<void> {
     const eventId = req.params.eventId as string
-    res.json(this.service.list(eventId))
+    const result = await this.availabilityPort.list(eventId)
+    res.json(result.ok ? result.value : { error: result.error })
   }
 
-  submitForEvent(req: Request, res: Response): void {
+  async submitForEvent(req: Request, res: Response): Promise<void> {
     const eventId = req.params.eventId as string
-    const { name, timeSlot } = req.body
+    const { name, start, end } = req.body
 
     if (typeof name !== 'string' || name.trim() === '') {
       res.status(400).json({ error: 'name is required' })
       return
     }
 
-    if (typeof timeSlot !== 'string' || timeSlot.trim() === '') {
-      res.status(400).json({ error: 'timeSlot is required' })
+    if (typeof start !== 'string' || start.trim() === '') {
+      res.status(400).json({ error: 'start is required' })
       return
     }
 
-    const result = this.service.submit(eventId, name, timeSlot)
+    if (typeof end !== 'string' || end.trim() === '') {
+      res.status(400).json({ error: 'end is required' })
+      return
+    }
+
+    const result = await this.availabilityPort.submit(eventId, name, start, end)
 
     if (!result.ok) {
       res.status(404).json({ error: result.error })

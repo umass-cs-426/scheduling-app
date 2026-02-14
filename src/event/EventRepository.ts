@@ -18,6 +18,7 @@ function FindAllRepoError(message: string): FindAllRepoError {
 
 export interface EventRepository {
   save(event: Event): Result<Event, RepositoryError>
+  find(eventId: string): Result<Event, RepositoryError>
   findAll(): Result<Event[], RepositoryError>
   exists(eventId: string): Result<boolean, RepositoryError>
 }
@@ -27,6 +28,20 @@ class InMemoryEventRepository implements EventRepository {
 
   constructor(private logger: Logger) {
     logger.info('InMemoryEventRepository initialized')
+  }
+
+  find(eventId: string): Result<Event, RepositoryError> {
+    try {
+      this.logger.info(`Finding event ID: ${eventId}`)
+      const event = this.storage.get(eventId)
+      if (!event) {
+        return Err(FindAllRepoError(`Event with ID ${eventId} not found`))
+      }
+      return Ok(event)
+    } catch (error) {
+      this.logger.error(`Failed to find event: ${error}`)
+      return Err(FindAllRepoError('Failed to find event'))
+    }
   }
 
   save(event: Event): Result<Event, RepositoryError> {

@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import { EventPort } from '../../event/EventPort'
 
 export interface IEventController {
   list(req: Request, res: Response): void
@@ -6,10 +7,15 @@ export interface IEventController {
 }
 
 export class EventController implements IEventController {
-  constructor(private service: IEventService) {}
+  constructor(private eventPort: EventPort) {}
 
   list(_req: Request, res: Response): void {
-    res.json(this.service.listEvents())
+    const result = this.eventPort.list()
+    if (!result.ok) {
+      res.status(500).json({ error: result.error })
+      return
+    }
+    res.json(result.value)
   }
 
   create(req: Request, res: Response): void {
@@ -25,7 +31,9 @@ export class EventController implements IEventController {
       return
     }
 
-    const event = this.service.createEvent(title, date)
+    // const event = this.service.createEvent(title, date)
+    
+
     res.status(201).json(event)
   }
 }

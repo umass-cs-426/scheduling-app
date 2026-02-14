@@ -25,13 +25,11 @@ class AvailabilityImplementation implements Availability {
 // The Availability function is a factory function that creates a new
 // Availability object with the specified properties.
 export function Availability(
+  id: string,
   name: string,
   eventId: string,
   startTime: Time,
   endTime: Time,
 ): Availability {
-  const id = `${eventId}-${name}-${Date.now()}`
   return new AvailabilityImplementation(id, eventId, name, startTime, endTime)
 }
-
-export default Availability

@@ -1,5 +1,5 @@
 import { Logger } from '../logging/Logging'
-import { Err, Result } from '../types/Result'
+import { Err, Ok, Result } from '../types/Result'
 import { Event } from './Event'
 import { EventRepository } from './EventRepository'
 
@@ -33,7 +33,9 @@ function ExistsEventError(message: string): ExistsEventError {
 
 export interface EventService {
   // Creates a new event with the given title and date
-  createEvent(title: string, date: string): Event
+  createEvent(title: string, date: string): Result<Event, EventServiceError>
+  // Get an event by ID
+  getEvent(eventId: string): Result<Event, EventServiceError>
   // Lists all events
   listEvents(): Result<Event[], EventServiceError>
   // Checks if an event with the given ID exists
@@ -46,11 +48,23 @@ class BasicEventService implements EventService {
     private repository: EventRepository,
   ) {}
 
-  createEvent(title: string, date: string): Event {
+  getEvent(eventId: string): Result<Event, EventServiceError> {
+    const result = this.repository.find(eventId)
+    if (result.ok) {
+      return result
+    } else {
+      return Err(CreateEventError(result.error.message))
+    }
+  }
+
+  createEvent(title: string, date: string): Result<Event, EventServiceError> {
     const id = Math.random().toString(36).substring(2, 9)
     const event = { id, title, date }
-    this.repository.save(event)
-    return event
+    const saveResult = this.repository.save(event)
+    if (!saveResult.ok) {
+      return Err(CreateEventError(saveResult.error.message))
+    }
+    return Ok(event)
   }
 
   listEvents(): Result<Event[], EventServiceError> {

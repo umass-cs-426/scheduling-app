@@ -3,21 +3,47 @@
 
 import { Result, Ok, Err } from '../types/Result'
 import { EventService } from './EventService'
+import { Event } from './Event'
 
 type EventPortError = string
 
 export interface EventPort {
-  // The exists method checks if an event with the given ID exists. It returns
-  // a promise that resolves to true if the event exists, and false otherwise.
+  list: () => Result<Event[], EventPortError>
+  get: (eventId: string) => Result<Event, EventPortError>
   exists: (eventId: string) => Result<boolean, EventPortError>
+  create: (title: string, date: string) => Result<Event, EventPortError>
 }
 
 class LocalEventPort implements EventPort {
   constructor(private service: EventService) {}
 
+  list(): Result<Event[], EventPortError> {
+    const result = this.service.listEvents()
+    if (!result.ok) {
+      return Err(`Failed to list events: ${result.error.message}`)
+    }
+    return Ok(result.value)
+  }
+
+  get(eventId: string): Result<Event, EventPortError> {
+    const result = this.service.getEvent(eventId)
+    if (!result.ok) {
+      return Err(`Failed to get event: ${result.error.message}`)
+    }
+    return Ok(result.value)
+  }
+
   exists(eventId: string): Result<boolean, EventPortError> {
-    const exists = Math.random() > 0.5 // Randomly return true or false
-    return Ok(exists)
+    const result = this.service.getEvent(eventId)
+    return Ok(!result.ok ? false : true)
+  }
+
+  create(title: string, date: string): Result<Event, EventPortError> {
+    const result = this.service.createEvent(title, date)
+    if (!result.ok) {
+      return Err(`Failed to create event: ${result.error.message}`)
+    }
+    return Ok(result.value)
   }
 }
 
