@@ -46,7 +46,7 @@ export type LoggerType = { kind: 'ConsoleLogger' }
 // specified LoggerType. It uses a switch statement to determine which logger to
 // create based on the kind property of the LoggerType. If an unknown logger
 // type is provided, it throws an error.
-function Logger(logger: LoggerType): Logger {
+export default function Logger(logger: LoggerType): Logger {
   switch (logger.kind) {
     case 'ConsoleLogger':
       return new ConsoleLogger()
@@ -59,5 +59,3 @@ function Logger(logger: LoggerType): Logger {
       throw new Error(`Unknown logger type: ${logger.kind}`)
   }
 }
-
-export default Logger

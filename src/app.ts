@@ -2,7 +2,7 @@ import express from 'express'
 import path from 'node:path'
 
 import { InMemoryEventRepository } from './event/InMemoryEventRepository'
-import { EventService } from './event/EventService'
+import { EventService } from './event/EventServiceOri'
 import { InMemoryAvailabilityRepository } from './availability/InMemoryAvailabilityRepository'
 import { AvailabilityService } from './availability/AvailabilityServiceOri'
 import { EventController } from './web/EventController'

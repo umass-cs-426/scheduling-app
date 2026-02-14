@@ -1,33 +1,66 @@
-import { Result, Ok } from '../types/Result'
-import Event from './Event'
+import { Logger } from '../logging/Logging'
+import { Result, Ok, Err } from '../types/Result'
+import { Event } from './Event'
 
-// The RepositoryError type represents an error that can occur when interacting
-// with the event repository.
-export type RepositoryError = { message: string }
+type BaseRepoError = { message: string }
+type SaveRepoError = BaseRepoError & { kind: 'SaveRepoError' }
+type FindAllRepoError = BaseRepoError & { kind: 'FindAllRepoError' }
 
-// The EventRepository type defines the interface for a repository that manages
-// events. It includes methods for saving an event and retrieving all events.
-export type EventRepository = {
+export type RepositoryError = SaveRepoError | FindAllRepoError
+
+function SaveRepoError(message: string): SaveRepoError {
+  return { kind: 'SaveRepoError', message }
+}
+
+function FindAllRepoError(message: string): FindAllRepoError {
+  return { kind: 'FindAllRepoError', message }
+}
+
+export interface EventRepository {
   save(event: Event): Result<Event, RepositoryError>
-  findAll(): Event[]
+  findAll(): Result<Event[], RepositoryError>
+  exists(eventId: string): Result<boolean, RepositoryError>
 }
 
-// The Storage variable is an in-memory storage for events.
-const Storage = new Map<string, Event>()
+class InMemoryEventRepository implements EventRepository {
+  private storage: Map<string, Event> = new Map()
 
-const EventRepository: EventRepository = {
-  // The save method takes an Event object and saves it to the repository.
+  constructor(private logger: Logger) {
+    logger.info('InMemoryEventRepository initialized')
+  }
+
   save(event: Event): Result<Event, RepositoryError> {
-    Storage.set(event.id, event)
-    return Ok(event)
-  },
+    try {
+      this.logger.info(`Saving event: ${JSON.stringify(event)}`)
+      this.storage.set(event.id, event)
+      return Ok(event)
+    } catch (error) {
+      this.logger.error(`Failed to save event: ${error}`)
+      return Err(SaveRepoError('Failed to save event'))
+    }
+  }
 
-  // The findAll method retrieves all events from the repository. In this
-  // implementation, we will return an empty array. In a real application, this
-  // would involve querying the database for all events.
-  findAll(): Event[] {
-    return Array.from(Storage.values())
-  },
+  findAll(): Result<Event[], RepositoryError> {
+    try {
+      this.logger.info('Retrieving all events')
+      return Ok(Array.from(this.storage.values()))
+    } catch (error) {
+      this.logger.error(`Failed to retrieve events: ${error}`)
+      return Err(FindAllRepoError('Failed to retrieve events'))
+    }
+  }
+
+  exists(eventId: string): Result<boolean, RepositoryError> {
+    try {
+      this.logger.info(`Checking existence of event ID: ${eventId}`)
+      return Ok(this.storage.has(eventId))
+    } catch (error) {
+      this.logger.error(`Failed to check event existence: ${error}`)
+      return Err(FindAllRepoError('Failed to check event existence'))
+    }
+  }
 }
 
-export default EventRepository
+export default function EventRepository(logger: Logger): EventRepository {
+  return new InMemoryEventRepository(logger)
+}
