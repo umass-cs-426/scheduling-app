@@ -32,8 +32,8 @@ function ListServiceError(message: string): ListServiceError {
 export interface AvailabilityService {
   submit: (
     dto: CreateAvailabilityInputDto,
-  ) => Result<Availability, ServiceError>
-  list: (eventId: string) => Result<Availability[], ServiceError>
+  ) => Promise<Result<Availability, ServiceError>>
+  list: (eventId: string) => Promise<Result<Availability[], ServiceError>>
 }
 
 class BasicAvailabilityService implements AvailabilityService {
@@ -43,10 +43,12 @@ class BasicAvailabilityService implements AvailabilityService {
     private repository: AvailabilityRepository,
   ) {}
 
-  submit(dto: CreateAvailabilityInputDto): Result<Availability, ServiceError> {
+  async submit(
+    dto: CreateAvailabilityInputDto,
+  ): Promise<Result<Availability, ServiceError>> {
     const { eventId, name, startTime, endTime } = dto
     // Check if the event exists using the EventPort
-    const existsResult = this.eventPort.exists(eventId)
+    const existsResult = await this.eventPort.exists(eventId)
     if (!existsResult.ok) {
       this.logger.error(
         `Failed to check event existence: ${existsResult.error}`,
@@ -78,7 +80,7 @@ class BasicAvailabilityService implements AvailabilityService {
 
     // Save the availability to the repository
     this.logger.info(`Submitting availability: ${JSON.stringify(availability)}`)
-    const result = this.repository.save(availability)
+    const result = await this.repository.save(availability)
     if (!result.ok) {
       this.logger.error(
         `Failed to submit availability: ${result.error.message}`,
@@ -90,9 +92,9 @@ class BasicAvailabilityService implements AvailabilityService {
     return result
   }
 
-  list(eventId: string): Result<Availability[], ServiceError> {
+  async list(eventId: string): Promise<Result<Availability[], ServiceError>> {
     this.logger.info(`Listing availabilities for event ID: ${eventId}`)
-    const result = this.repository.findByEventId(eventId)
+    const result = await this.repository.findByEventId(eventId)
     if (!result.ok) {
       this.logger.error(
         `Failed to list availabilities: ${result.error.message}`,

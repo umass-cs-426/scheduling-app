@@ -33,10 +33,14 @@ function FailedToFindError(message: string): FailedToFindError {
 // The AvailabilityRepository interface defines the methods that any
 // implementation of the repository must provide.
 export interface AvailabilityRepository {
-  save: (a: ValidatedAvailabilityDto) => Result<Availability, RepositoryError>
-  delete: (id: string) => Result<Availability, RepositoryError>
-  find: (id: string) => Result<Availability, RepositoryError>
-  findByEventId: (eventId: string) => Result<Availability[], RepositoryError>
+  save: (
+    a: ValidatedAvailabilityDto,
+  ) => Promise<Result<Availability, RepositoryError>>
+  delete: (id: string) => Promise<Result<Availability, RepositoryError>>
+  find: (id: string) => Promise<Result<Availability, RepositoryError>>
+  findByEventId: (
+    eventId: string,
+  ) => Promise<Result<Availability[], RepositoryError>>
 }
 
 // The InMemoryAvailabilityRepository is a simple implementation of the
@@ -63,13 +67,15 @@ class InMemoryAvailabilityRepository implements AvailabilityRepository {
   // storage and return an Ok result. In a real application, this would involve
   // saving the availability to a database, and we would need to handle
   // potential errors that could occur during the save operation.
-  save(dto: ValidatedAvailabilityDto): Result<Availability, RepositoryError> {
+  async save(
+    dto: ValidatedAvailabilityDto,
+  ): Promise<Result<Availability, RepositoryError>> {
     try {
       // Fake ID generation for in-memory purposes.
       const id = crypto.randomUUID()
       const availability = this.fromDTO(dto, id)
       this.logger.info(`Saving availability: ${JSON.stringify(availability)}`)
-      this.storage.set(id, availability)
+      await this.storage.set(id, availability)
       return Ok(availability)
     } catch (error) {
       this.logger.error(`Failed to save availability: ${error}`)
@@ -85,7 +91,7 @@ class InMemoryAvailabilityRepository implements AvailabilityRepository {
   // application, this would involve deleting the availability from a database,
   // and we would need to handle potential errors that could occur during the
   // delete operation.
-  delete(id: string): Result<Availability, RepositoryError> {
+  async delete(id: string): Promise<Result<Availability, RepositoryError>> {
     try {
       const availability = this.storage.get(id)
       if (availability) {
@@ -119,7 +125,7 @@ class InMemoryAvailabilityRepository implements AvailabilityRepository {
   // exists. In a real application, this would involve querying the database for
   // the availability with the specified ID, and we would need to handle
   // potential errors that could occur during the find operation.
-  find(id: string): Result<Availability, RepositoryError> {
+  async find(id: string): Promise<Result<Availability, RepositoryError>> {
     try {
       this.logger.info(`Finding availability with ID: ${id}`)
       const avail = this.storage.get(id)
@@ -150,7 +156,9 @@ class InMemoryAvailabilityRepository implements AvailabilityRepository {
   // this would involve querying the database for availabilities with the
   // specified event ID, and we would need to handle potential errors that could
   // occur during the find operation.
-  findByEventId(eventId: string): Result<Availability[], RepositoryError> {
+  async findByEventId(
+    eventId: string,
+  ): Promise<Result<Availability[], RepositoryError>> {
     try {
       this.logger.info(`Finding availabilities for event ID: ${eventId}`)
       const availabilities: Availability[] = []
