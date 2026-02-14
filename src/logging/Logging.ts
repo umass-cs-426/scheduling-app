@@ -13,9 +13,9 @@ export interface Logger {
 // The prefix function generates a log message prefix that includes a timestamp
 // and the log level. This helps to provide context for log messages and makes
 // it easier to read and understand the logs.
-function prefix(level: 'INFO' | 'WARN' | 'ERROR'): string {
+function prefix(name: string, level: 'INFO' | 'WARN' | 'ERROR'): string {
   const timestamp = new Date().toISOString()
-  return `${timestamp} ${level}:`
+  return `${timestamp} ${name} ${level}:`
 }
 
 // The ConsoleLogger is a simple implementation of the Logger interface that
@@ -23,16 +23,18 @@ function prefix(level: 'INFO' | 'WARN' | 'ERROR'): string {
 // demonstration purposes, and it can be replaced with a more robust
 // implementation (e.g., using a logging library) in the future.
 class ConsoleLogger implements Logger {
+  constructor(private name: string = 'ConsoleLogger') {}
+
   info(message: string): void {
-    console.log(`${prefix('INFO')} ${message}`)
+    console.log(`${prefix(this.name, 'INFO')} ${message}`)
   }
 
   warn(message: string): void {
-    console.warn(`${prefix('WARN')} ${message}`)
+    console.warn(`${prefix(this.name, 'WARN')} ${message}`)
   }
 
   error(message: string): void {
-    console.error(`${prefix('ERROR')} ${message}`)
+    console.error(`${prefix(this.name, 'ERROR')} ${message}`)
   }
 }
 
@@ -46,10 +48,10 @@ export type LoggerType = { kind: 'ConsoleLogger' }
 // specified LoggerType. It uses a switch statement to determine which logger to
 // create based on the kind property of the LoggerType. If an unknown logger
 // type is provided, it throws an error.
-export default function Logger(logger: LoggerType): Logger {
+export default function Logger(name: string, logger: LoggerType): Logger {
   switch (logger.kind) {
     case 'ConsoleLogger':
-      return new ConsoleLogger()
+      return new ConsoleLogger(name)
     default:
       // This is a type guard to ensure that all cases are handled. If we add
       // new logger types in the future and forget to handle them here,

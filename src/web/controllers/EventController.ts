@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import { IEventService } from '../event/EventServiceOri'
 
 export interface IEventController {
   list(req: Request, res: Response): void

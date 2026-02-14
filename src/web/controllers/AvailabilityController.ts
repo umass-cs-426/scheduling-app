@@ -1,13 +1,13 @@
 import { Request, Response } from 'express'
-import { IAvailabilityService } from '../availability/AvailabilityServiceOri'
+import AvailabilityService from '../availability/AvailabilityService'
 
-export interface IAvailabilityController {
+export interface AvailabilityController {
   listForEvent(req: Request, res: Response): void
   submitForEvent(req: Request, res: Response): void
 }
 
-export class AvailabilityController implements IAvailabilityController {
-  constructor(private service: IAvailabilityService) {}
+class DefaultAvailabilityController implements AvailabilityController {
+  constructor(private service: AvailabilityService) {}
 
   listForEvent(req: Request, res: Response): void {
     const eventId = req.params.eventId as string

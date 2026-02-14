@@ -12,7 +12,7 @@ export interface EventPort {
   exists: (eventId: string) => Result<boolean, EventPortError>
 }
 
-class PublicEventPort implements EventPort {
+class LocalEventPort implements EventPort {
   constructor(private service: EventService) {}
 
   exists(eventId: string): Result<boolean, EventPortError> {
@@ -22,5 +22,5 @@ class PublicEventPort implements EventPort {
 }
 
 export default function EventPort(service: EventService): EventPort {
-  return new PublicEventPort(service)
+  return new LocalEventPort(service)
 }

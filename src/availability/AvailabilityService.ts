@@ -3,6 +3,7 @@ import { Time } from '../types/Time'
 import { Ok, Err, Result } from '../types/Result'
 import Availability from './Availability'
 import AvailabilityRepository from './AvailabilityRepository'
+import { EventPort } from '../event/EventPort'
 
 type BaseServiceError = { message: string }
 type SubmitServiceError = BaseServiceError & { kind: 'SubmitServiceError' }
@@ -31,6 +32,7 @@ interface AvailabilityService {
 class BasicAvailabilityService implements AvailabilityService {
   constructor(
     private logger: Logger,
+    private eventPort: EventPort,
     private repository: AvailabilityRepository,
   ) {}
 
@@ -40,6 +42,15 @@ class BasicAvailabilityService implements AvailabilityService {
     startTime: Time,
     endTime: Time,
   ): Result<Availability, ServiceError> {
+    // Check if the event exists using the EventPort
+    const existsResult = this.eventPort.exists(eventId)
+    if (!existsResult.ok) {
+      this.logger.error(
+        `Failed to check event existence: ${existsResult.error}`,
+      )
+      return Err(SubmitServiceError('Failed to check event existence'))
+    }
+
     const availability = Availability(name, eventId, startTime, endTime)
     this.logger.info(`Submitting availability: ${JSON.stringify(availability)}`)
     const result = this.repository.save(availability)
@@ -67,7 +78,8 @@ class BasicAvailabilityService implements AvailabilityService {
 
 export function AvailabilityService(
   logger: Logger,
+  eventPort: EventPort,
   repo: AvailabilityRepository,
 ): AvailabilityService {
-  return new BasicAvailabilityService(logger, repo)
+  return new BasicAvailabilityService(logger, eventPort, repo)
 }
