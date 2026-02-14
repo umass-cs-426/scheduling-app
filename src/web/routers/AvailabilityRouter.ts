@@ -14,6 +14,10 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
     this.router = this.initRouter()
   }
 
+  getName(): string {
+    return 'AvailabilityRouter'
+  }
+
   initRouter(): Router {
     const router = Router()
     const jsonMW = Express.json()

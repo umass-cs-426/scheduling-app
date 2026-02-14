@@ -1,15 +1,22 @@
 import Express, { Router } from 'express'
 import { EventController } from '../controllers/EventController'
+import { EventPort } from '../../event/EventPort'
+import { Logger } from '../../logging/Logging'
+import { SchedulingRouter } from './SchedulingRouter'
 
-export interface EventRouter {
-  getRouter(): Router
-}
-
-class DefaultEventRouter implements EventRouter {
+class DefaultEventRouter implements SchedulingRouter {
   private router: Router
 
-  constructor(private eventController: EventController) {
+  constructor(
+    private logger: Logger,
+    private eventPort: EventPort,
+  ) {
+    this.logger.info('EventRouter Created')
     this.router = this.initRouter()
+  }
+
+  getName(): string {
+    return 'EventRouter'
   }
 
   initRouter(): Router {
@@ -38,8 +45,9 @@ class DefaultEventRouter implements EventRouter {
   }
 }
 
-export default function EventRouter(
-  eventController: EventController,
-): EventRouter {
-  return new DefaultEventRouter(eventController)
+export function EventRouter(
+  logger: Logger,
+  eventPort: EventPort,
+): SchedulingRouter {
+  return new DefaultEventRouter(logger, eventPort)
 }

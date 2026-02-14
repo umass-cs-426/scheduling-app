@@ -102,7 +102,7 @@ class BasicSchedulingWebServer implements SchedulingWebServer {
     const length = routers.length
     this.logger.info(`Mounting ${length} Routers`)
     routers.forEach((router, index) => {
-      this.logger.info(`Mounting Router ${index + 1}`)
+      this.logger.info(`Mounting Router ${router.getName()}`)
       const expressRouter = router.getRouter()
       this.logRoutes(expressRouter)
       app.use(expressRouter)

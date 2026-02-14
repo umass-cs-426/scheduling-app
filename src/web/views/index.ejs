@@ -3,7 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <title>Scheduler Demo</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link
+      rel="stylesheet"
+      href="/styles.css" />
     <script src="https://unpkg.com/htmx.org"></script>
     <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
   </head>
@@ -19,15 +21,22 @@
         hx-post="/events"
         hx-ext="json-enc"
         hx-headers='{"Content-Type":"application/json"}'
-        hx-swap="none"
-      >
-        <input name="title" placeholder="Title" />
-        <input name="date" placeholder="YYYY-MM-DD" />
+        hx-swap="none">
+        <input
+          name="title"
+          placeholder="Title" />
+        <input
+          name="date"
+          type="date"
+          placeholder="YYYY-MM-DD" />
         <button type="submit">Create Event</button>
       </form>
 
       <p>
-        <button hx-get="/events" hx-target="#events" hx-swap="innerHTML">
+        <button
+          hx-get="/events"
+          hx-target="#events"
+          hx-swap="innerHTML">
           Load Events (JSON)
         </button>
       </p>
@@ -39,20 +48,26 @@
       <h2>Availability</h2>
 
       <p class="hint">
-        Paste an eventId here. This is intentionally manual to keep the HTTP boundary visible.
+        Paste an eventId here. This is intentionally manual to keep the HTTP
+        boundary visible.
       </p>
 
-      <input id="eventId" placeholder="eventId" />
+      <input
+        id="eventId"
+        placeholder="eventId" />
 
       <form
         id="availabilityForm"
         hx-post="/events/REPLACE_EVENT_ID/availability"
         hx-ext="json-enc"
         hx-headers='{"Content-Type":"application/json"}'
-        hx-swap="none"
-      >
-        <input name="name" placeholder="Your name" />
-        <input name="timeSlot" placeholder="Time slot" />
+        hx-swap="none">
+        <input
+          name="name"
+          placeholder="Your name" />
+        <input
+          name="timeSlot"
+          placeholder="Time slot" />
         <button type="submit">Submit Availability</button>
       </form>
 
@@ -61,8 +76,7 @@
           id="loadAvailability"
           hx-get="/events/REPLACE_EVENT_ID/availability"
           hx-target="#availability"
-          hx-swap="innerHTML"
-        >
+          hx-swap="innerHTML">
           Load Availability (JSON)
         </button>
       </p>
@@ -71,33 +85,33 @@
     </section>
 
     <script>
-      const eventIdInput = document.getElementById("eventId");
-      const loadBtn = document.getElementById("loadAvailability");
-      const form = document.getElementById("availabilityForm");
+      const eventIdInput = document.getElementById('eventId')
+      const loadBtn = document.getElementById('loadAvailability')
+      const form = document.getElementById('availabilityForm')
 
       function normalizeEventId(raw) {
-        const trimmed = raw.trim();
-        if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
-          return trimmed.slice(1, -1);
+        const trimmed = raw.trim()
+        if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
+          return trimmed.slice(1, -1)
         }
-        return trimmed;
+        return trimmed
       }
 
       function updateUrls() {
-        const id = normalizeEventId(eventIdInput.value);
-        if (!id) return;
+        const id = normalizeEventId(eventIdInput.value)
+        if (!id) return
 
         if (eventIdInput.value !== id) {
-          eventIdInput.value = id;
+          eventIdInput.value = id
         }
 
-        loadBtn.setAttribute("hx-get", `/events/${id}/availability`);
-        form.setAttribute("hx-post", `/events/${id}/availability`);
+        loadBtn.setAttribute('hx-get', `/events/${id}/availability`)
+        form.setAttribute('hx-post', `/events/${id}/availability`)
       }
 
-      eventIdInput.addEventListener("input", updateUrls);
-      loadBtn.addEventListener("click", updateUrls);
-      form.addEventListener("submit", updateUrls);
+      eventIdInput.addEventListener('input', updateUrls)
+      loadBtn.addEventListener('click', updateUrls)
+      form.addEventListener('submit', updateUrls)
     </script>
   </body>
 </html>
