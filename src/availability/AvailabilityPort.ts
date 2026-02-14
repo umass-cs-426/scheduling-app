@@ -31,7 +31,7 @@ class LocalAvailabilityPort implements AvailabilityPort {
   ): Promise<Result<Availability, string>> {
     // Submit the availability using the service
     const dto = CreateAvailabilityInputDto(eventId, name, startTime, endTime)
-    const saveResult = this.service.submit(dto)
+    const saveResult = await this.service.submit(dto)
 
     // Check if the submission was successful
     if (!saveResult.ok) {
@@ -44,7 +44,7 @@ class LocalAvailabilityPort implements AvailabilityPort {
 
   async list(eventId: string): Promise<Result<Availability[], string>> {
     // Simulate fetching availability for an event
-    const availabilities = this.service.list(eventId)
+    const availabilities = await this.service.list(eventId)
     if (!availabilities.ok) {
       return Err(`Failed to fetch availability: ${availabilities.error}`)
     }
