@@ -64,6 +64,6 @@ them as references later.
 - Explore htmx attributes we do not use yet (hx-boost, hx-sse).
 - Read about Node’s event loop to connect “async” to runtime behavior.
 
-Remember, keep you mind open when you look at these documents. Understand
-quickly and move on. It is helpful to have tests that will show you when things
-are wrong or right.
+Remember to keep our minds open as we read. We can understand the main idea
+quickly and move forward, then return later for details. It also helps to have
+tests because they show us when something is right or wrong.
