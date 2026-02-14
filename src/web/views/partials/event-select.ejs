@@ -1,6 +1,6 @@
 <select id="eventId" name="eventId" form="availabilityForm" required<% if (oob) { %> hx-swap-oob="true"<% } %>>
-  <option value="" disabled selected>Select an event</option>
+  <option value="" disabled <%= selectedEventId ? '' : 'selected' %>>Select an event</option>
   <% (events || []).forEach((event) => { %>
-    <option value="<%= event.id %>"><%= event.title || event.id %></option>
+    <option value="<%= event.id %>" <%= selectedEventId === event.id ? 'selected' : '' %>><%= event.title || event.id %></option>
   <% }) %>
 </select>

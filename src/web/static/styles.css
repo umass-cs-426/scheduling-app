@@ -19,6 +19,9 @@ body {
   padding: 24px;
   background: radial-gradient(circle at top, var(--bg) 0%, #ffffff 35%, var(--bg-accent) 120%);
   color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
 }
 
 h1, h2 {
@@ -32,6 +35,11 @@ section {
   padding: 16px;
   margin-bottom: 16px;
   box-shadow: var(--shadow);
+}
+
+.page {
+  width: min(980px, 92vw);
+  margin: 24px auto;
 }
 
 input, button {

@@ -1,4 +1,4 @@
-<div id="events">
+<div id="events" hx-get="/events/fragment" hx-trigger="every 5s" hx-swap="outerHTML">
   <h3>All Events</h3>
   <% if (!events || events.length === 0) { %>
     <p>No events yet.</p>

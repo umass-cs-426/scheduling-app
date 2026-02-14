@@ -81,6 +81,24 @@ class DefaultEventRouter implements SchedulingRouter {
       }),
     )
 
+    router.get(
+      '/select',
+      this.asyncHandler(async (_req, res) => {
+        const events = await this.eventPort.list()
+        if (!events.ok) {
+          this.logger.error(`Error listing events: ${events.error}`)
+          this.respondInternalError(res)
+          return
+        }
+        const selected = this.readSelectedEventId(_req)
+        res.render('partials/event-select', {
+          events: events.value,
+          oob: false,
+          selectedEventId: selected,
+        })
+      }),
+    )
+
     router.get('/read/:id', (req, res) => {
       res.status(501).json({ error: 'Not implemented' })
     })
@@ -144,6 +162,20 @@ class DefaultEventRouter implements SchedulingRouter {
       res.set('HX-Trigger', 'events-updated')
     }
     res.render('partials/events-fragment', { events: events.value })
+  }
+
+  private readSelectedEventId(req: Express.Request): string | null {
+    const value = req.query.eventId
+    if (typeof value === 'string' && value.trim().length > 0) {
+      return value.trim()
+    }
+    if (Array.isArray(value) && value.length > 0) {
+      const first = value[0]
+      if (typeof first === 'string' && first.trim().length > 0) {
+        return first.trim()
+      }
+    }
+    return null
   }
 
   getRouter(): Router {

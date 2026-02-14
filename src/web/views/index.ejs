@@ -11,12 +11,13 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   </head>
   <body>
-    <h1>Scheduler Demo</h1>
+    <main class="page">
+      <h1>Scheduler Demo</h1>
 
     <section>
       <h2>Events</h2>
 
-      <p class="hint">Create an event, then click Load Events to see it.</p>
+      <p class="hint">Create an event!</p>
 
       <form
         id="create-event-form"
@@ -24,7 +25,8 @@
         hx-ext="json-enc"
         hx-headers='{"Content-Type":"application/json"}'
         hx-target="#events"
-        hx-swap="outerHTML">
+        hx-swap="outerHTML"
+        hx-on::after-request="this.reset()">
         <input
           name="title"
           placeholder="Title" />
@@ -36,15 +38,6 @@
         <button type="submit">Create Event</button>
       </form>
 
-      <p>
-        <button
-          hx-get="/events/fragment"
-          hx-target="#events"
-          hx-swap="outerHTML">
-          Refresh Events
-        </button>
-      </p>
-
       <%- include('partials/events-list', { events }) %>
     </section>
 
@@ -54,7 +47,14 @@
       <p class="hint">Select an event to target availability requests.</p>
       <p class="hint">This is required before submitting availability.</p>
 
-      <%- include('partials/event-select', { events, oob: false }) %>
+      <div
+        id="event-select"
+        hx-get="/events/select"
+        hx-trigger="load, events-updated from:body"
+        hx-include="#eventId"
+        hx-swap="innerHTML">
+        <%- include('partials/event-select', { events, oob: false, selectedEventId: null }) %>
+      </div>
 
       <form
         id="availabilityForm"
@@ -63,6 +63,7 @@
         hx-headers='{"Content-Type":"application/json"}'
         hx-target="#availability-list"
         hx-swap="outerHTML"
+        hx-on::after-request="this.reset()"
         x-data="{
           startTime: '<%= (defaults && defaults.startTime) || '' %>',
           endTime: '<%= (defaults && defaults.endTime) || '' %>',
@@ -101,23 +102,13 @@
         <button type="submit">Submit Availability</button>
       </form>
 
-      <p>
-        <button
-          id="loadAvailability"
-          hx-get="/availability/fragment"
-          hx-target="#availability-list"
-          hx-swap="outerHTML">
-          Refresh Availability
-        </button>
-      </p>
-
       <div
         id="availability-list"
         hx-get="/availability/fragment"
-        hx-trigger="load, events-updated from:body">
+        hx-trigger="load">
         Loading availability...
       </div>
     </section>
-
+    </main>
   </body>
 </html>

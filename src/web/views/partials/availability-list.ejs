@@ -30,7 +30,7 @@
 } %>
 <% const colorForName = (name) => palette[hashName(name) % palette.length] %>
 
-<div id="availability-list">
+<div id="availability-list" hx-get="/availability/fragment" hx-trigger="every 5s" hx-swap="outerHTML">
   <h3>All Availability</h3>
   <% if (!availabilityByEvent || availabilityByEvent.length === 0) { %>
     <p>No availability yet.</p>
