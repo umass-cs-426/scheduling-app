@@ -59,7 +59,8 @@
               <div
                 class="timeline-block"
                 title="<%= entry.name %>: <%= formatTime(entry.startTime) %> to <%= formatTime(entry.endTime) %>"
-                style="left: <%= left %>%; width: <%= width %>%; background: <%= color %>;"
+                x-data="{ left: <%= left %>, width: <%= width %>, color: '<%= color %>' }"
+                x-bind:style="{ left: left + '%', width: width + '%', background: color }"
                 hx-delete="/availability/delete/<%= entry.id %>"
                 hx-target="#availability-list"
                 hx-swap="outerHTML"

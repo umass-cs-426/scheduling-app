@@ -117,7 +117,8 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
           return
         }
 
-        const result = await this.availabilityPort.delete(id)
+        const availabilityId = Array.isArray(id) ? id[0] : id
+        const result = await this.availabilityPort.delete(availabilityId)
         if (!result.ok) {
           this.logger.error(`Error deleting availability: ${result.error}`)
           this.respondInternalError(res)
