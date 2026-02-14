@@ -52,13 +52,18 @@ If you do not have a `.env` file, the app will still use the default port.
 
 If we are new to this repo, the best path is:
 
-1) `docs/01-READING.md` — the short, guided reading plan.
-2) `docs/02-REPO-GUIDE.md` — the big picture of the modular monolith.
-3) `docs/03-ARCHITECTURE-NOTES.md` — diagrams and why ports matter.
-4) `docs/04-CONCEPTS.md` — critical ideas that make the code make sense.
-5) `docs/05-TYPESCRIPT-GUIDE.md` — the TypeScript patterns we use.
-6) `docs/06-CONFIGURATION-GUIDE.md` — tsconfig, npm, and build flow.
-7) `docs/07-UI-GUIDE.md` — how the UI works with htmx + Alpine.
+1) [01-READING.md](docs/01-READING.md) — the short, guided reading plan.
+2) [02-REPO-GUIDE.md](docs/02-REPO-GUIDE.md) — the big picture of the modular
+   monolith.
+3) [03-ARCHITECTURE-NOTES.md](docs/03-ARCHITECTURE-NOTES.md) — diagrams and why
+   ports matter.
+4) [04-CONCEPTS.md](docs/04-CONCEPTS.md) — critical ideas that make the code
+   make sense.
+5) [05-TYPESCRIPT-GUIDE.md](docs/05-TYPESCRIPT-GUIDE.md) — the TypeScript
+   patterns we use.
+6) [06-CONFIGURATION-GUIDE.md](docs/06-CONFIGURATION-GUIDE.md) — tsconfig, npm,
+   and build flow.
+7) [07-UI-GUIDE.md](docs/07-UI-GUIDE.md) — how the UI works with htmx + Alpine.
 
 ### Quick Links
 
