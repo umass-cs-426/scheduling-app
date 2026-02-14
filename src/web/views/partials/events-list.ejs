@@ -1,0 +1,16 @@
+<div id="events">
+  <h3>All Events</h3>
+  <% if (!events || events.length === 0) { %>
+    <p>No events yet.</p>
+  <% } else { %>
+    <ul>
+      <% events.forEach((event) => { %>
+        <li>
+          <strong><%= event.title || event.id %></strong>
+          <span>— <%= event.date %></span>
+          <code>(<%= event.id %>)</code>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</div>

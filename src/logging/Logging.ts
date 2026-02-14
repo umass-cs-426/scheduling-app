@@ -16,7 +16,7 @@ export interface Logger {
 // it easier to read and understand the logs.
 function prefix(name: string, level: 'INFO' | 'WARN' | 'ERROR'): string {
   const timestamp = new Date().toISOString()
-  return `${timestamp} ${name} ${level}:`
+  return `${timestamp} ${level} ${name}:`
 }
 
 // The ConsoleLogger is a simple implementation of the Logger interface that

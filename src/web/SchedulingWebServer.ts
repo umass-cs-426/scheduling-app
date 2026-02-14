@@ -2,6 +2,7 @@ import path from 'node:path'
 import { Logger } from '../logging/Logging'
 import Express, { Application, Router } from 'express'
 import { SchedulingRouter } from './routers/SchedulingRouter'
+import { EventPort } from '../event/EventPort'
 
 // The SchedulingWebServer class is responsible for setting up and starting the
 // Express web server for the scheduling application.
@@ -13,9 +14,10 @@ export interface SchedulingWebServer {
 export function SchedulingWebServer(
   logger: Logger,
   routers: SchedulingRouter[],
+  eventPort?: EventPort,
 ): SchedulingWebServer {
   const nlogger = logger.derive('SchedulingWebServer')
-  return new BasicSchedulingWebServer(nlogger, routers)
+  return new BasicSchedulingWebServer(nlogger, routers, eventPort)
 }
 
 // The BasicSchedulingWebServer class implements the SchedulingWebServer
@@ -23,14 +25,17 @@ export function SchedulingWebServer(
 // and routes, and provides a method to start the server on a specified port.
 class BasicSchedulingWebServer implements SchedulingWebServer {
   private app: Application
+  private eventPort?: EventPort
 
   // The constructor initializes the SchedulingWebServer with a logger and an
   // array of routers.
   constructor(
     private logger: Logger,
     routers: SchedulingRouter[],
+    eventPort?: EventPort,
   ) {
     this.logger.info('SchedulingWebServer Created')
+    this.eventPort = eventPort
     this.app = this.initApp(routers)
   }
 
@@ -75,6 +80,14 @@ class BasicSchedulingWebServer implements SchedulingWebServer {
     const staticDir = this.staticDir()
     this.logger.info(`Serving Static Files From ${staticDir}`)
     app.use(Express.static(staticDir))
+
+    // Middleware to log incoming requests. This logs the HTTP method and the
+    // original URL of each request, which can be useful for debugging and
+    // monitoring the app's activity.
+    app.use((req, _res, next) => {
+      this.logger.info(`${req.method} ${req.originalUrl}`)
+      next()
+    })
   }
 
   // Initializes the view engine for the Express app. It sets EJS as the view
@@ -96,21 +109,32 @@ class BasicSchedulingWebServer implements SchedulingWebServer {
     app.get('/health', (_req: any, res: any) => res.json({ ok: true }))
 
     // Add root view route
-    app.get('/', (_req: any, res: any) => res.render('index'))
+    app.get('/', async (_req: any, res: any) => {
+      const events = await this.loadEvents()
+      const defaults = this.defaultFormValues()
+      res.render('index', { events, defaults })
+    })
 
     // Mount provided routers
     const length = routers.length
     this.logger.info(`Mounting ${length} Routers`)
     routers.forEach((router, index) => {
       this.logger.info(`Mounting Router ${router.getName()}`)
-      const expressRouter = router.getRouter()
-      this.logRoutes(expressRouter)
-      app.use(expressRouter)
+      this.logRoutes(router)
+      app.use(router.getPathPrefix(), router.getRouter())
     })
   }
 
-  logRoutes(router: Router) {
-    for (const layer of router.stack) {
+  // Logs the routes defined in a given SchedulingRouter. It retrieves the
+  // Express Router instance from the SchedulingRouter and iterates through its
+  // stack to extract and log the HTTP methods and paths for each route. This
+  // provides visibility into the available routes in the application.
+  // --> Yes, this is super hacky, but it is how it is done.
+  logRoutes(router: SchedulingRouter) {
+    const expressRouter = router.getRouter()
+    const pathPrefix = router.getPathPrefix()
+    this.logger.info(`Routes for ${router.getName()} (Prefix: ${pathPrefix}):`)
+    for (const layer of expressRouter.stack) {
       if (layer.route) {
         const methodMap = (layer.route as any).methods
         const methods: string[] = []
@@ -118,9 +142,40 @@ class BasicSchedulingWebServer implements SchedulingWebServer {
           methods.push(method.toUpperCase())
         }
         const path = layer.route.path
-        this.logger.info(` -- ${methods.join(', ')} ${path}`)
+        this.logger.info(` -- ${methods.join(', ')} ${pathPrefix}${path}`)
       }
     }
+  }
+
+  private async loadEvents() {
+    if (!this.eventPort) {
+      return []
+    }
+
+    try {
+      const events = await this.eventPort.list()
+      if (events.ok) {
+        return events.value
+      }
+      this.logger.error(`Error listing events for index view: ${events.error}`)
+    } catch (error) {
+      this.logger.error(`Error listing events for index view: ${error}`)
+    }
+
+    return []
+  }
+
+  // Build default values for form fields so the page loads with helpful inputs.
+  private defaultFormValues() {
+    const now = new Date()
+    const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000)
+
+    const pad2 = (value: number) => String(value).padStart(2, '0')
+    const date = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}-${pad2(now.getDate())}`
+    const startTime = `${pad2(now.getHours())}:${pad2(now.getMinutes())}`
+    const endTime = `${pad2(oneHourLater.getHours())}:${pad2(oneHourLater.getMinutes())}`
+
+    return { date, startTime, endTime }
   }
 
   start(port: number) {

@@ -6,8 +6,8 @@
     <link
       rel="stylesheet"
       href="/styles.css" />
-    <script src="https://unpkg.com/htmx.org"></script>
-    <script src="https://unpkg.com/htmx.org/dist/ext/json-enc.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
+    <script src="https://unpkg.com/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
   </head>
   <body>
     <h1>Scheduler Demo</h1>
@@ -18,100 +18,88 @@
       <p class="hint">Create an event, then click Load Events to see it.</p>
 
       <form
-        hx-post="/events"
+        id="create-event-form"
+        hx-post="/events/create"
         hx-ext="json-enc"
         hx-headers='{"Content-Type":"application/json"}'
-        hx-swap="none">
+        hx-target="#events"
+        hx-swap="outerHTML">
         <input
           name="title"
           placeholder="Title" />
         <input
           name="date"
           type="date"
+          value="<%= (defaults && defaults.date) || '' %>"
           placeholder="YYYY-MM-DD" />
         <button type="submit">Create Event</button>
       </form>
 
       <p>
         <button
-          hx-get="/events"
+          hx-get="/events/fragment"
           hx-target="#events"
-          hx-swap="innerHTML">
-          Load Events (JSON)
+          hx-swap="outerHTML">
+          Refresh Events
         </button>
       </p>
 
-      <pre id="events"></pre>
+      <%- include('partials/events-list', { events }) %>
     </section>
 
     <section>
       <h2>Availability</h2>
 
-      <p class="hint">
-        Paste an eventId here. This is intentionally manual to keep the HTTP
-        boundary visible.
-      </p>
+      <p class="hint">Select an event to target availability requests.</p>
+      <p class="hint">This is required before submitting availability.</p>
 
-      <input
-        id="eventId"
-        placeholder="eventId" />
+      <%- include('partials/event-select', { events, oob: false }) %>
 
       <form
         id="availabilityForm"
-        hx-post="/events/REPLACE_EVENT_ID/availability"
+        hx-post="/availability/create"
         hx-ext="json-enc"
         hx-headers='{"Content-Type":"application/json"}'
-        hx-swap="none">
+        hx-target="#availability-list"
+        hx-swap="outerHTML">
         <input
           name="name"
-          placeholder="Your name" />
+          placeholder="Your name"
+          required />
         <input
-          name="timeSlot"
-          placeholder="Time slot" />
+          name="startTime"
+          type="time"
+          value="<%= (defaults && defaults.startTime) || '' %>"
+          placeholder="Start (HH:MM)"
+          step="60"
+          required />
+        <input
+          name="endTime"
+          type="time"
+          value="<%= (defaults && defaults.endTime) || '' %>"
+          placeholder="End (HH:MM)"
+          step="60"
+          required />
         <button type="submit">Submit Availability</button>
       </form>
 
       <p>
         <button
           id="loadAvailability"
-          hx-get="/events/REPLACE_EVENT_ID/availability"
-          hx-target="#availability"
-          hx-swap="innerHTML">
-          Load Availability (JSON)
+          hx-get="/availability/fragment"
+          hx-target="#availability-list"
+          hx-swap="outerHTML">
+          Refresh Availability
         </button>
       </p>
 
-      <pre id="availability"></pre>
+      <div
+        id="availability-list"
+        hx-get="/availability/fragment"
+        hx-trigger="load, events-updated from:body">
+        Loading availability...
+      </div>
     </section>
 
-    <script>
-      const eventIdInput = document.getElementById('eventId')
-      const loadBtn = document.getElementById('loadAvailability')
-      const form = document.getElementById('availabilityForm')
-
-      function normalizeEventId(raw) {
-        const trimmed = raw.trim()
-        if (trimmed.startsWith('"') && trimmed.endsWith('"')) {
-          return trimmed.slice(1, -1)
-        }
-        return trimmed
-      }
-
-      function updateUrls() {
-        const id = normalizeEventId(eventIdInput.value)
-        if (!id) return
-
-        if (eventIdInput.value !== id) {
-          eventIdInput.value = id
-        }
-
-        loadBtn.setAttribute('hx-get', `/events/${id}/availability`)
-        form.setAttribute('hx-post', `/events/${id}/availability`)
-      }
-
-      eventIdInput.addEventListener('input', updateUrls)
-      loadBtn.addEventListener('click', updateUrls)
-      form.addEventListener('submit', updateUrls)
-    </script>
   </body>
 </html>

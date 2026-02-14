@@ -8,9 +8,13 @@ import { EventRouter } from './web/routers/EventRouter'
 const logger = Logger('App', { kind: 'ConsoleLogger' })
 const eventPort = EventPort(logger)
 const availabilityPort = AvailabilityPort(logger, eventPort)
-const server = SchedulingWebServer(logger, [
-  AvailabilityRouter(logger, availabilityPort),
-  EventRouter(logger, eventPort),
-])
+const server = SchedulingWebServer(
+  logger,
+  [
+    AvailabilityRouter(logger, availabilityPort, eventPort),
+    EventRouter(logger, eventPort),
+  ],
+  eventPort,
+)
 
 server.start(3000)

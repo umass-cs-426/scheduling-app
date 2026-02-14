@@ -5,5 +5,6 @@ import { Router } from 'express'
 // getRouter() that returns an Express Router instance.
 export interface SchedulingRouter {
   getRouter(): Router
+  getPathPrefix(): string
   getName(): string
 }

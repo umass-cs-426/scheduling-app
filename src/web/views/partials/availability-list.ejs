@@ -1,0 +1,34 @@
+<% const formatTime = (time) => {
+  if (!time) return ''
+  const minutes = String(time.minutes).padStart(2, '0')
+  const rawHours = Number(time.hours)
+  const ampm = rawHours >= 12 ? 'PM' : 'AM'
+  const hours12 = rawHours % 12 === 0 ? 12 : rawHours % 12
+  return `${hours12}:${minutes} ${ampm}`
+} %>
+
+<div id="availability-list">
+  <h3>All Availability</h3>
+  <% if (!availabilityByEvent || availabilityByEvent.length === 0) { %>
+    <p>No availability yet.</p>
+  <% } else { %>
+    <% availabilityByEvent.forEach((group) => { %>
+      <div class="availability-group">
+        <h4><%= group.event.title || group.event.id %> <code>(<%= group.event.id %>)</code></h4>
+        <% if (!group.availability || group.availability.length === 0) { %>
+          <p>No availability for this event yet.</p>
+        <% } else { %>
+          <ul>
+            <% group.availability.forEach((entry) => { %>
+              <li>
+                <strong><%= entry.name %></strong>
+                <span>— <%= formatTime(entry.startTime) %> to <%= formatTime(entry.endTime) %></span>
+                <span>(Event: <%= group.event.title || group.event.id %>)</span>
+              </li>
+            <% }) %>
+          </ul>
+        <% } %>
+      </div>
+    <% }) %>
+  <% } %>
+</div>

@@ -71,9 +71,10 @@ class BasicAvailabilityService implements AvailabilityService {
     }
 
     // Create the validated availability object
+    // Build the validated availability with the correct field order.
     const availability = ValidatedAvailabilityDto(
-      name,
       eventId,
+      name,
       startTimeResult.value,
       endTimeResult.value,
     )
