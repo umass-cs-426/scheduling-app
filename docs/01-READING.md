@@ -6,19 +6,22 @@ small purpose so we know why we are reading it.
 
 ## Part 1: Understand This Repo (About 45–60 minutes)
 
-1. `docs/REPO-GUIDE.md`  
+1. `docs/02-REPO-GUIDE.md`  
    Big picture overview of the modular monolith and how code is organized.
 
-2. `docs/ARCHITECTURE-NOTES.md`  
+2. `docs/03-ARCHITECTURE-NOTES.md`  
    The two architecture diagrams and why ports make growth easy.
 
-3. `docs/TYPESCRIPT-GUIDE.md`  
+3. `docs/04-CONCEPTS.md`  
+   Critical ideas that make the code make sense.
+
+4. `docs/05-TYPESCRIPT-GUIDE.md`  
    The TypeScript patterns we use (DTOs, factory functions, Result types).
 
-4. `docs/CONFIGURATION-GUIDE.md`  
+5. `docs/06-CONFIGURATION-GUIDE.md`  
    How tsconfig, package.json, and package‑lock work together.
 
-5. `docs/UI-GUIDE.md`  
+6. `docs/07-UI-GUIDE.md`  
    How the UI is built with server‑side templates, htmx, and Alpine.js.
 
 ## Part 2: External References (About 60–90 minutes)

@@ -49,9 +49,10 @@ If you do not have a `.env` file, the app will still use the default port.
 ## Docs
 
 Start here:
-- `docs/REPO-GUIDE.md`
-- `docs/ARCHITECTURE-NOTES.md`
-- `docs/TYPESCRIPT-GUIDE.md`
-- `docs/CONFIGURATION-GUIDE.md`
-- `docs/UI-GUIDE.md`
-- `docs/READING.md`
+- `docs/01-READING.md`
+- `docs/02-REPO-GUIDE.md`
+- `docs/03-ARCHITECTURE-NOTES.md`
+- `docs/04-CONCEPTS.md`
+- `docs/05-TYPESCRIPT-GUIDE.md`
+- `docs/06-CONFIGURATION-GUIDE.md`
+- `docs/07-UI-GUIDE.md`
