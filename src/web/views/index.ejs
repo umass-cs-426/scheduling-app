@@ -6,8 +6,9 @@
     <link
       rel="stylesheet"
       href="/styles.css" />
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js"></script>
-    <script src="https://unpkg.com/htmx-ext-json-enc@2.0.1/json-enc.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.8/dist/htmx.min.js" defer></script>
+    <script src="https://unpkg.com/htmx-ext-json-enc@2.0.1/json-enc.js" defer></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
   </head>
   <body>
     <h1>Scheduler Demo</h1>
@@ -61,7 +62,21 @@
         hx-ext="json-enc"
         hx-headers='{"Content-Type":"application/json"}'
         hx-target="#availability-list"
-        hx-swap="outerHTML">
+        hx-swap="outerHTML"
+        x-data="{
+          startTime: '<%= (defaults && defaults.startTime) || '' %>',
+          endTime: '<%= (defaults && defaults.endTime) || '' %>',
+          syncEndTime() {
+            if (!this.startTime) return
+            const [h, m] = this.startTime.split(':').map(Number)
+            if (Number.isNaN(h) || Number.isNaN(m)) return
+            const date = new Date()
+            date.setHours(h, m, 0, 0)
+            date.setHours(date.getHours() + 1)
+            const pad2 = (v) => String(v).padStart(2, '0')
+            this.endTime = `${pad2(date.getHours())}:${pad2(date.getMinutes())}`
+          }
+        }">
         <input
           name="name"
           placeholder="Your name"
@@ -72,14 +87,17 @@
           value="<%= (defaults && defaults.startTime) || '' %>"
           placeholder="Start (HH:MM)"
           step="60"
-          required />
+          required
+          x-model="startTime"
+          x-on:input.debounce.150="syncEndTime()" />
         <input
           name="endTime"
           type="time"
           value="<%= (defaults && defaults.endTime) || '' %>"
           placeholder="End (HH:MM)"
           step="60"
-          required />
+          required
+          x-model="endTime" />
         <button type="submit">Submit Availability</button>
       </form>
 

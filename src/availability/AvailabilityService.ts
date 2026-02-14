@@ -10,11 +10,13 @@ import { ValidatedAvailabilityDto } from './dto/ValidatedAvailabilityDto'
 type BaseServiceError = { message: string }
 type SubmitServiceError = BaseServiceError & { kind: 'SubmitServiceError' }
 type ListServiceError = BaseServiceError & { kind: 'ListServiceError' }
+type DeleteServiceError = BaseServiceError & { kind: 'DeleteServiceError' }
 type ValidateTimeError = BaseServiceError & { kind: 'ValidateTimeError' }
 
 export type ServiceError =
   | SubmitServiceError
   | ListServiceError
+  | DeleteServiceError
   | ValidateTimeError
 
 function SubmitServiceError(message: string): SubmitServiceError {
@@ -29,11 +31,16 @@ function ListServiceError(message: string): ListServiceError {
   return { kind: 'ListServiceError', message }
 }
 
+function DeleteServiceError(message: string): DeleteServiceError {
+  return { kind: 'DeleteServiceError', message }
+}
+
 export interface AvailabilityService {
   submit: (
     dto: CreateAvailabilityInputDto,
   ) => Promise<Result<Availability, ServiceError>>
   list: (eventId: string) => Promise<Result<Availability[], ServiceError>>
+  delete: (availabilityId: string) => Promise<Result<Availability, ServiceError>>
 }
 
 class BasicAvailabilityService implements AvailabilityService {
@@ -101,6 +108,20 @@ class BasicAvailabilityService implements AvailabilityService {
         `Failed to list availabilities: ${result.error.message}`,
       )
       return Err(ListServiceError('Failed to list availabilities'))
+    }
+    return result
+  }
+
+  async delete(
+    availabilityId: string,
+  ): Promise<Result<Availability, ServiceError>> {
+    this.logger.info(`Deleting availability with ID: ${availabilityId}`)
+    const result = await this.repository.delete(availabilityId)
+    if (!result.ok) {
+      this.logger.error(
+        `Failed to delete availability: ${result.error.message}`,
+      )
+      return Err(DeleteServiceError('Failed to delete availability'))
     }
     return result
   }

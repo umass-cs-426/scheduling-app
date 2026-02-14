@@ -6,6 +6,29 @@
   const hours12 = rawHours % 12 === 0 ? 12 : rawHours % 12
   return `${hours12}:${minutes} ${ampm}`
 } %>
+<% const minutesFromMidnight = (time) => {
+  if (!time) return 0
+  return (Number(time.hours) * 60) + Number(time.minutes)
+} %>
+<% const percentOfDay = (minutes) => (minutes / 1440) * 100 %>
+<% const palette = [
+  '#0ea5a5',
+  '#6366f1',
+  '#f97316',
+  '#10b981',
+  '#ec4899',
+  '#f59e0b',
+  '#3b82f6',
+] %>
+<% const hashName = (name) => {
+  let hash = 0
+  for (let i = 0; i < name.length; i += 1) {
+    hash = ((hash << 5) - hash) + name.charCodeAt(i)
+    hash |= 0
+  }
+  return Math.abs(hash)
+} %>
+<% const colorForName = (name) => palette[hashName(name) % palette.length] %>
 
 <div id="availability-list">
   <h3>All Availability</h3>
@@ -14,7 +37,39 @@
   <% } else { %>
     <% availabilityByEvent.forEach((group) => { %>
       <div class="availability-group">
-        <h4><%= group.event.title || group.event.id %> <code>(<%= group.event.id %>)</code></h4>
+        <div class="availability-header">
+          <h4><%= group.event.title || group.event.id %> <code>(<%= group.event.id %>)</code></h4>
+          <span class="availability-date"><%= group.event.date %></span>
+        </div>
+        <div class="timeline">
+          <div class="timeline-axis">
+            <span>12AM</span>
+            <span>6AM</span>
+            <span>12PM</span>
+            <span>6PM</span>
+            <span>12AM</span>
+          </div>
+          <div class="timeline-track">
+            <% (group.availability || []).forEach((entry) => { %>
+              <% const start = minutesFromMidnight(entry.startTime) %>
+              <% const end = minutesFromMidnight(entry.endTime) %>
+              <% const left = percentOfDay(start) %>
+              <% const width = Math.max(2, percentOfDay(Math.max(end - start, 0))) %>
+              <% const color = colorForName(entry.name || 'Unknown') %>
+              <div
+                class="timeline-block"
+                title="<%= entry.name %>: <%= formatTime(entry.startTime) %> to <%= formatTime(entry.endTime) %>"
+                style="left: <%= left %>%; width: <%= width %>%; background: <%= color %>;"
+                hx-delete="/availability/delete/<%= entry.id %>"
+                hx-target="#availability-list"
+                hx-swap="outerHTML"
+                hx-confirm="Delete <%= entry.name %>'s availability?"
+                hx-trigger="click">
+                <span class="timeline-label"><%= entry.name %></span>
+              </div>
+            <% }) %>
+          </div>
+        </div>
         <% if (!group.availability || group.availability.length === 0) { %>
           <p>No availability for this event yet.</p>
         <% } else { %>
@@ -24,6 +79,15 @@
                 <strong><%= entry.name %></strong>
                 <span>— <%= formatTime(entry.startTime) %> to <%= formatTime(entry.endTime) %></span>
                 <span>(Event: <%= group.event.title || group.event.id %>)</span>
+                <button
+                  type="button"
+                  class="ghost danger"
+                  hx-delete="/availability/delete/<%= entry.id %>"
+                  hx-target="#availability-list"
+                  hx-swap="outerHTML"
+                  hx-confirm="Delete <%= entry.name %>'s availability?">
+                  Delete
+                </button>
               </li>
             <% }) %>
           </ul>

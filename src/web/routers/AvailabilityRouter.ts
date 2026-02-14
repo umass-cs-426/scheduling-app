@@ -105,6 +105,32 @@ class DefaultAvailabilityRouter implements SchedulingRouter {
       }),
     )
 
+    router.delete(
+      '/delete/:id',
+      // Delete an availability entry by ID.
+      this.asyncHandler(async (req, res) => {
+        const { id } = req.params
+        if (!id) {
+          res.status(400).json({ error: 'availability id is required' })
+          return
+        }
+
+        const result = await this.availabilityPort.delete(id)
+        if (!result.ok) {
+          this.logger.error(`Error deleting availability: ${result.error}`)
+          this.respondInternalError(res)
+          return
+        }
+
+        if (this.isHtmxRequest(req)) {
+          await this.renderAvailabilityFragment(res)
+          return
+        }
+
+        res.json({ availability: result.value })
+      }),
+    )
+
     router.put('/update/:id', jsonMW, (req, res) => {
       res.status(501).json({ error: 'Not implemented' })
     })

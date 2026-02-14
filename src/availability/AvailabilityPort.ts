@@ -17,6 +17,7 @@ export interface AvailabilityPort {
     endTime: string,
   ) => Promise<Result<Availability, string>>
   list: (eventId: string) => Promise<Result<Availability[], string>>
+  delete: (availabilityId: string) => Promise<Result<Availability, string>>
 }
 
 class LocalAvailabilityPort implements AvailabilityPort {
@@ -49,6 +50,14 @@ class LocalAvailabilityPort implements AvailabilityPort {
     }
 
     return Ok(availabilities.value)
+  }
+
+  async delete(availabilityId: string): Promise<Result<Availability, string>> {
+    const result = await this.service.delete(availabilityId)
+    if (!result.ok) {
+      return Err(`Failed to delete availability: ${result.error}`)
+    }
+    return Ok(result.value)
   }
 }
 

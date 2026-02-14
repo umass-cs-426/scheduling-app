@@ -1,9 +1,24 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #f1f5ff;
+  --bg-accent: #fef3c7;
+  --card: #ffffff;
+  --ink: #111827;
+  --muted: #4b5563;
+  --border: #e5e7eb;
+  --accent: #0ea5a5;
+  --accent-strong: #0f766e;
+  --accent-soft: rgba(14, 165, 165, 0.25);
+  --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+}
+
 body {
-  font-family: system-ui, Arial, sans-serif;
+  font-family: "Space Grotesk", system-ui, sans-serif;
   margin: 0;
   padding: 24px;
-  background: #f6f8fb;
-  color: #1f2937;
+  background: radial-gradient(circle at top, var(--bg) 0%, #ffffff 35%, var(--bg-accent) 120%);
+  color: var(--ink);
 }
 
 h1, h2 {
@@ -11,11 +26,12 @@ h1, h2 {
 }
 
 section {
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--card);
+  border: 1px solid var(--border);
   border-radius: 10px;
   padding: 16px;
   margin-bottom: 16px;
+  box-shadow: var(--shadow);
 }
 
 input, button {
@@ -31,13 +47,29 @@ button {
   padding: 8px 12px;
   border: 0;
   border-radius: 8px;
-  background: #2563eb;
+  background: var(--accent);
   color: #fff;
   cursor: pointer;
 }
 
 button:hover {
-  background: #1d4ed8;
+  background: var(--accent-strong);
+}
+
+button.ghost {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  margin-left: 8px;
+}
+
+button.ghost:hover {
+  background: #f1f5f9;
+}
+
+button.danger {
+  color: #b91c1c;
+  border-color: #fecaca;
 }
 
 pre {
@@ -48,5 +80,81 @@ pre {
 }
 
 .hint {
-  color: #4b5563;
+  color: var(--muted);
+}
+
+code {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.9em;
+}
+
+.availability-group {
+  margin: 16px 0 24px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.availability-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.availability-date {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+.timeline {
+  margin: 12px 0 16px;
+}
+
+.timeline-axis {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.timeline-track {
+  position: relative;
+  margin-top: 8px;
+  height: 18px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.timeline-block {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  border-radius: 999px;
+  box-shadow: 0 6px 12px var(--accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0b1020;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0 8px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.timeline-label {
+  pointer-events: none;
+}
+
+.timeline-block:hover {
+  transform: translateY(-1px) scale(1.01);
+  filter: brightness(1.05);
 }
