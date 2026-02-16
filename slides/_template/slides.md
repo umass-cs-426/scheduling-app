@@ -86,8 +86,35 @@ export function SchedulingWebServer(...) {
 
 ---
 
+# Magic Move (Animated Code Changes)
+
+````md magic-move
+```ts
+export function createEvent(title: string, date: string) {
+  return { title, date }
+}
+```
+```ts
+export function createEvent(title: string, date: string) {
+  if (!title || !date) {
+    throw new Error('Missing fields')
+  }
+  return { title, date }
+}
+```
+```ts
+export function createEvent(title: string, date: string) {
+  if (!title || !date) {
+    throw new Error('Missing fields')
+  }
+  return { title, date, createdAt: new Date().toISOString() }
+}
+```
+````
+
+---
+
 # Wrap-Up
 
 - Key takeaways
 - Next lecture preview
-
