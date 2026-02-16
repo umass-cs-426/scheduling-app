@@ -2,7 +2,7 @@
 GET http://localhost:3000/health
 
 ### Create an event
-POST http://localhost:3000/events
+POST http://localhost:3000/events/create
 Content-Type: application/json
 
 {
@@ -10,26 +10,52 @@ Content-Type: application/json
   "date": "2026-02-12"
 }
 
-### List events
-GET http://localhost:3000/events
+### List events (JSON)
+GET http://localhost:3000/events/all
+
+### Render events fragment (HTMX)
+GET http://localhost:3000/events/fragment
+HX-Request: true
+
+### Render event select dropdown (HTMX)
+GET http://localhost:3000/events/select
+HX-Request: true
+
+### Render event select dropdown with a selected event
+GET http://localhost:3000/events/select?eventId=REPLACE_EVENT_ID
+HX-Request: true
 
 ### Submit availability (replace with real event id)
-POST http://localhost:3000/events/REPLACE_EVENT_ID/availability
+POST http://localhost:3000/availability/create
 Content-Type: application/json
 
 {
+  "eventId": "REPLACE_EVENT_ID",
   "name": "Ava",
-  "timeSlot": "Tue 3pm"
+  "startTime": "09:00",
+  "endTime": "10:00"
 }
 
-### List availability
-GET http://localhost:3000/events/REPLACE_EVENT_ID/availability
+### List availability for a specific event
+GET http://localhost:3000/availability/read?eventId=REPLACE_EVENT_ID
 
-### Submit availability for fake event id, expect 404
-POST http://localhost:3000/events/not-a-real-id/availability
+### Render availability fragment (HTMX)
+GET http://localhost:3000/availability/fragment
+HX-Request: true
+
+### Delete availability (replace with real availability id)
+DELETE http://localhost:3000/availability/delete/REPLACE_AVAILABILITY_ID
+
+### List all availability (not implemented)
+GET http://localhost:3000/availability/all
+
+### Read availability by id (not implemented)
+GET http://localhost:3000/availability/read/REPLACE_AVAILABILITY_ID
+
+### Update availability (not implemented)
+PUT http://localhost:3000/availability/update
 Content-Type: application/json
 
 {
-  "name": "Ava",
-  "timeSlot": "Tue 3pm"
+  "eventId": "REPLACE_EVENT_ID"
 }
