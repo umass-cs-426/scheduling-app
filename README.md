@@ -69,3 +69,5 @@ If we are new to this repo, the best path is:
 6. [06-CONFIGURATION-GUIDE.md](docs/06-CONFIGURATION-GUIDE.md) — tsconfig, npm,
    and build flow.
 7. [07-UI-GUIDE.md](docs/07-UI-GUIDE.md) — how the UI works with htmx + Alpine.
+8. [08-DOCKER-GUIDE.md](docs/08-DOCKER-GUIDE.md) — Docker concepts and
+   hands-on commands for this repo.

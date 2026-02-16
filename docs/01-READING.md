@@ -24,6 +24,9 @@ small purpose so we know why we are reading it.
 6. `docs/07-UI-GUIDE.md`  
    How the UI is built with server‑side templates, htmx, and Alpine.js.
 
+7. `docs/08-DOCKER-GUIDE.md`  
+   Docker fundamentals and a command tutorial using this repository.
+
 ## Part 2: External References (About 60–90 minutes)
 
 These are free and worth reading. We can skim the first sections now and use
