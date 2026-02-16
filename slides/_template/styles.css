@@ -1,0 +1,11 @@
+/* This selector is extremely specific to override Slidev themes */
+html body .slidev-layout .asciinema-player .asciinema-terminal {
+  color: #c6d0f5 !important; /* Matches your Ghostty 'fg' color */
+  font-family: monospace !important;
+  line-height: 1.1 !important;
+}
+
+html body .slidev-layout .asciinema-player .asciinema-terminal span {
+  color: inherit !important;
+  opacity: 1 !important;
+}

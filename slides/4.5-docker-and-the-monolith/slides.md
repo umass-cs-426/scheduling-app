@@ -40,9 +40,24 @@ export function example() {
 
 ---
 
+# CLI Demo (Asciinema)
+
+```bash
+asciinema rec docker-demo.cast
+```
+
+```html
+<script
+  src="https://asciinema.org/a/REPLACE_ID.js"
+  id="asciicast-REPLACE_ID"
+  async
+></script>
+```
+
+---
+
 # Next Steps
 
 - Add code walkthroughs
 - Highlight key lines
 - Add transitions between refactors
-

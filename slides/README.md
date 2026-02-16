@@ -19,6 +19,56 @@ This folder stores Slidev decks. Each branch gets its own deck folder named afte
    ```
 3. Customize the title and agenda.
 
+## Interactive Code (Monaco)
+
+The template includes Monaco editor examples:
+
+- `{monaco}` creates an editable code block.
+- `{monaco-run}` lets you execute code in the slide.
+
+These features are provided by Slidev; no extra setup is needed beyond running Slidev.
+
+## Terminal Demos (Asciinema)
+
+Asciinema lets you record a real terminal session and embed it in slides.
+
+### Install (macOS)
+
+```sh
+brew install asciinema
+```
+
+### Install (pipx)
+
+```sh
+pipx install asciinema
+```
+
+### Record and Play
+
+```sh
+asciinema rec demo.cast
+asciinema play demo.cast
+```
+
+### Upload (optional)
+
+```sh
+asciinema upload demo.cast
+```
+
+### Local Hosting (Slidev)
+
+1. Add a `public/` folder inside the deck:
+   ```sh
+   mkdir -p "slides/$(git branch --show-current)/public"
+   ```
+2. Copy the cast file:
+   ```sh
+   cp demo.cast "slides/$(git branch --show-current)/public/demo.cast"
+   ```
+3. Embed it in a slide using the asciinema player and `/demo.cast`.
+
 ## Example
 
 ```sh

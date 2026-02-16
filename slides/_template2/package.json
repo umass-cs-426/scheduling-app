@@ -1,0 +1,20 @@
+{
+  "name": "template2",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "slidev build",
+    "dev": "slidev --open",
+    "export": "slidev export",
+    "cast:record": "bash -c 'name=${1:-demo}.cast; mkdir -p slides/test/_template2/public/casts; env PS1=\"$ \" asciinema rec -q -c \"bash --noprofile --norc\" \"slides/test/_template2/public/casts/$name\"' --"
+  },
+  "dependencies": {
+    "@slidev/cli": "^52.12.0",
+    "@slidev/theme-default": "latest",
+    "@slidev/theme-seriph": "latest",
+    "vue": "^3.5.27"
+  },
+  "devDependencies": {
+    "slidev-addon-asciinema": "^0.1.11"
+  }
+}
