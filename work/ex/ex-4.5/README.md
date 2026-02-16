@@ -181,3 +181,9 @@ At minimum, keep:
    - command run
    - full error text
    - what you already tried
+
+## Solution Reference (After You Attempt the Exercise)
+
+Honor system: attempt all parts first, then use the solution to check and improve your understanding.
+
+- [`SOLUTION.md`](SOLUTION.md)
