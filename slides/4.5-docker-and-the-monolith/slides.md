@@ -375,6 +375,38 @@ Important:
 - `-p` is required to access the app from your browser
 
 ---
+
+# In‑Class Activity (6 minutes)
+
+Create a tiny Dockerfile, build it, and run it.
+
+Steps:
+
+1. `mkdir docker-mini && cd docker-mini`
+2. Create a `Dockerfile` with:
+
+```dockerfile
+FROM alpine:3.19
+CMD ["echo", "Hello from my first container!"]
+```
+
+3. Build the image:
+
+```bash
+docker build -t hello-docker .
+```
+
+4. Run the container:
+
+```bash
+docker run --rm hello-docker
+```
+
+Submit to Canvas:
+
+- A screenshot showing your Dockerfile and the `docker run` output.
+
+---
 layout: two-cols
 layoutClass: gap-12
 ---
