@@ -1,1 +1,6 @@
-{ "recommendations": ["digitalbrainstem.javascript-ejs-support"] }
+{
+  "recommendations": [
+    "digitalbrainstem.javascript-ejs-support",
+    "tomoki1207.pdf"
+  ]
+}
