@@ -22,7 +22,7 @@ What happens next:
 
 You can also open the PDF at:
 
-- [slides/4.5-docker-and-the-monolith.pdf](slides/4.5-docker-and-the-monolith.pdf)
+- [slides/4.5-docker-and-the-monolith.pdf](4.5-docker-and-the-monolith.pdf)
 
 The PDF is useful for quick review, but it **does not include animations,
 interactive steps, or videos**.
