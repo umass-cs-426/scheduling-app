@@ -6,7 +6,7 @@
     "build": "slidev build",
     "dev": "slidev --open",
     "export": "slidev export",
-    "cast:record": "bash -c 'name=${1:-demo}.cast; mkdir -p slides/test/_template2/public/casts; env PS1=\"$ \" asciinema rec -q -c \"bash --noprofile --norc\" \"slides/test/_template2/public/casts/$name\"' --"
+    "cast:record": "bash -c 'name=${1:-demo}.cast; mkdir -p public/casts; env PS1=\"$ \" asciinema rec -q -c \"bash --noprofile --norc\" \"public/casts/$name\"' --"
   },
   "dependencies": {
     "@slidev/cli": "^52.12.0",
