@@ -4,6 +4,16 @@ This repository demonstrates a modular monolith architecture with clear module
 boundaries (Event, Availability, Logging), DTOs, and a simple HTML‑first UI
 powered by htmx and Alpine.js.
 
+## Slides (Slidev)
+
+We use **Slidev** to build and present the lecture slide decks in this repo.
+The slides run as an interactive web app (animations, step‑through code, and
+embedded casts).
+
+Student instructions for running the decks are in:
+
+- [slides/README.md](slides/README.md)
+
 ## Local Development
 
 1. Install dependencies
