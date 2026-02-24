@@ -2,9 +2,9 @@
 # try also 'default' to start simple
 theme: default
 background: https://cover.sli.dev
-title: Docker Compose and Service Decomposition
+title: 5.6 Docker Compose and Service Decomposition
 info: |
-  ## Docker Compose and Service Decomposition
+  ## 5.6 Docker Compose and Service Decomposition
   Orchestrating multi-container applications with Docker Compose, and how to break down a monolith into services.
 class: text-center
 drawings:
@@ -16,7 +16,7 @@ lineNumbers: true
 highlighter: shiki
 ---
 
-# Docker Compose and Service Decomposition
+# 5.6 Docker Compose and Service Decomposition
 
 <div class="text-2xl opacity-70 mt-6">
 <p>https://github.com/umass-cs-426/scheduling-app</p>
