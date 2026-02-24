@@ -1,0 +1,6 @@
+{
+  "slidev.include": [
+    "**/slides.md",
+    "slides/5.6-compose-and-service-decomposition/slides.md"
+  ]
+}

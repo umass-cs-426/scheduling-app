@@ -1,0 +1,143 @@
+/* style.css */
+.asciinema-wrapper {
+  min-height: 300px;
+  width: 100%;
+}
+
+/* Larger code blocks for the entire deck */
+pre.shiki,
+.slidev-code {
+  font-size: 1.2rem !important;
+  line-height: 1.45 !important;
+  margin-bottom: 1rem;
+}
+
+.monaco-editor .view-lines {
+  font-size: 22px !important;
+  line-height: 1.45 !important;
+}
+
+.slidev-layout p {
+  line-height: 1.35;
+}
+
+.callout {
+  padding: 0.8rem 1rem;
+  border-left: 6px solid #2563eb;
+  background: #eff6ff;
+  border-radius: 0.5rem;
+  margin: 0.8rem 0;
+}
+
+.callout-warn {
+  border-left-color: #d97706;
+  background: #fffbeb;
+}
+
+.callout-danger {
+  border-left-color: #dc2626;
+  background: #fef2f2;
+}
+
+/* Framed unordered list with configurable border vars */
+ul.ul-frame {
+  --ul-border-rgb: 37 99 235;
+  --ul-border-opacity: 0.35;
+  --ul-border-width: 2px;
+  --ul-radius: 12px;
+  --ul-pad-y: 0.8rem;
+  --ul-pad-x: 1.1rem;
+
+  border: var(--ul-border-width) solid rgb(var(--ul-border-rgb) / var(--ul-border-opacity));
+  border-radius: var(--ul-radius);
+  padding: var(--ul-pad-y) var(--ul-pad-x) var(--ul-pad-y) calc(var(--ul-pad-x) + 1rem);
+  margin: 0.8rem 0;
+}
+
+/* Apply framed list style to every UL on selected slide classes */
+.framed-lists > ul,
+.framed-lists-blue > ul,
+.framed-lists-green > ul,
+.framed-lists-red > ul,
+.framed-lists-gray > ul,
+.framed-lists-amber > ul,
+.framed-lists-purple > ul {
+  --ul-border-rgb: 37 99 235; /* default blue */
+  --ul-border-opacity: 0.35;
+  --ul-border-width: 2px;
+  --ul-radius: 12px;
+  --ul-pad-y: 0.8rem;
+  --ul-pad-x: 1.1rem;
+
+  border: var(--ul-border-width) solid rgb(var(--ul-border-rgb) / var(--ul-border-opacity));
+  border-radius: var(--ul-radius);
+  padding: var(--ul-pad-y) var(--ul-pad-x) var(--ul-pad-y) calc(var(--ul-pad-x) + 1rem);
+  margin: 0.8rem 0;
+}
+
+.framed-lists-blue > ul {
+  --ul-border-rgb: 37 99 235;
+}
+
+.framed-lists-green > ul {
+  --ul-border-rgb: 22 163 74;
+}
+
+.framed-lists-red > ul {
+  --ul-border-rgb: 220 38 38;
+}
+
+.framed-lists-gray > ul {
+  --ul-border-rgb: 75 85 99;
+}
+
+.framed-lists-amber > ul {
+  --ul-border-rgb: 217 119 6;
+}
+
+.framed-lists-purple > ul {
+  --ul-border-rgb: 126 34 206;
+}
+
+/* Default subtitle style for first paragraph after an H1 */
+.slidev-layout h1 + p {
+  font-size: 1.5rem;
+  opacity: 0.5;
+  line-height: 2rem;
+  margin-top: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.sentence-emphasis {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid rgb(59 130 246 / 0.28);
+  background: rgb(59 130 246 / 0.09);
+  border-radius: 0.45rem;
+  color: rgb(30 58 138 / 0.92);
+  font-weight: 500;
+}
+
+.slidev-layout.two-columns.cols-60-40 {
+  grid-template-columns: 1.5fr 1fr !important;
+}
+
+.slidev-layout.two-columns.cols-67-33 {
+  grid-template-columns: 2fr 1fr !important;
+}
+
+.slidev-layout.two-columns.cols-70-30 {
+  grid-template-columns: 2.333fr 1fr !important;
+}
+
+.slidev-layout.two-columns.cols-75-25 {
+  grid-template-columns: 3fr 1fr !important;
+}
+
+.slidev-layout.two-columns.cols-40-60 {
+  grid-template-columns: 1fr 1.5fr !important;
+}
+
+.slidev-layout.two-columns.cols-33-67 {
+  grid-template-columns: 1fr 2fr !important;
+}

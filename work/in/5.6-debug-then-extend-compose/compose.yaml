@@ -1,0 +1,35 @@
+services:
+  web:
+    build: ./web
+    environment:
+      API_BASE_URL: http://api:3001
+      PORT: 3000
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+  api:
+    build: ./api
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgres://appuser:devpass@database:5432/appdb
+    depends_on:
+      - db
+    ports:
+      - "3001:3001"
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: devpass
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+
+volumes:
+  pgdata:
