@@ -24,8 +24,8 @@ highlighter: shiki
 </div>
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Schedule
 
@@ -38,8 +38,8 @@ highlighter: shiki
   - No surprises
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Material
 
@@ -47,8 +47,8 @@ highlighter: shiki
 - **Branch:** 5.6-compose-and-service-decomposition
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Why Docker Compose Exists
 
@@ -61,8 +61,8 @@ Imagine our scheduling app has 3 containers:
 Goal: start everything together, wire networking correctly, and repeat the same setup on every machine.
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Without Compose: Death by `docker run`
 
@@ -76,8 +76,8 @@ Using Docker alone, we must manually remember:
 One typo or missed flag can break the whole stack.
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Now Scale That to 100 API Containers
 
@@ -93,13 +93,11 @@ Imagine doing that with your home-cooked, terribly written shell script:
 At that point, manual orchestration stops being practical.
 
 ---
-
 layout: image
 image: https://commons.wikimedia.org/wiki/Special:FilePath/Cygnus%20explosion.jpg
 backgroundSize: cover
 class: text-white
 transition: fade
-
 ---
 
 <div class="text-4xl font-bold leading-tight max-w-4xl mt-10">
@@ -111,11 +109,9 @@ transition: fade
 </div>
 
 ---
-
 layout: full
 class: text-white
 transition: fade
-
 ---
 
 <div class="relative w-full h-full overflow-hidden">
@@ -138,8 +134,8 @@ transition: fade
 </div>
 
 ---
-
-## class: text-2xl code-lg
+class: text-2xl code-lg
+---
 
 # The Compose Idea
 
@@ -149,7 +145,7 @@ Instead of many fragile commands, define the system once:
 services:
   web: { ... }
   api: { ... }
-  db: { ... }
+  db:  { ... }
 ```
 
 Then run it with one command:
@@ -161,13 +157,11 @@ docker compose up
 Compose is the single source of truth for your local multi-service environment.
 
 ---
-
 layout: image
 image: https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif
 backgroundSize: cover
 class: text-white
 transition: fade
-
 ---
 
 <div class="w-full h-full flex items-center justify-center">
@@ -177,8 +171,8 @@ transition: fade
 </div>
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Docker Compose
 
@@ -190,8 +184,8 @@ transition: fade
 YAML reference: [https://yaml.org/spec/1.2.2/](https://yaml.org/spec/1.2.2/)
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Service Decomposition
 
@@ -202,8 +196,8 @@ YAML reference: [https://yaml.org/spec/1.2.2/](https://yaml.org/spec/1.2.2/)
 Modular Monolith -> Service Decomposition -> Microservices
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Example: Scheduling App
 
@@ -217,8 +211,8 @@ Modular Monolith -> Service Decomposition -> Microservices
   - `db`: The database service for storing event data.
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Approach
 
@@ -226,8 +220,8 @@ Modular Monolith -> Service Decomposition -> Microservices
 - Then, we will decompose the monolith into services and update our docker compose incrementally
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Docker Compose with Modular Monolith
 
@@ -248,9 +242,10 @@ services:
 
 <!-- TODO: Need to implement this file. -->
 
----
 
-## class: text-2xl
+---
+class: text-2xl
+---
 
 # Building the Application
 
@@ -269,8 +264,8 @@ docker compose build
 <!-- TODO: record a cast of running this command -->
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Running the Application
 
@@ -287,8 +282,8 @@ To bring the system down, type in `Ctrl-C` in the terminal.
 <!-- TODO: record a cast of running this command -->
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Detached Mode
 
@@ -301,8 +296,8 @@ docker compose up -d
 Starts the containers in the background
 
 ---
-
-## class: framed-lists
+class: framed-lists
+---
 
 # Fundamental Commands
 
@@ -318,11 +313,9 @@ There are many commands available in Docker Compose, but here are some of the mo
 - `docker-compose start`: Start existing containers for a service
 
 ---
-
 class: text-2xl
 zoom: 0.9
 transition: fade
-
 ---
 
 # Fundamental Commands Lifecycle
@@ -341,11 +334,9 @@ flowchart LR
 ```
 
 ---
-
 class: text-2xl
 zoom: 1.05
 transition: fade
-
 ---
 
 # Lifecycle Focus: Start and Observe
@@ -360,11 +351,9 @@ flowchart LR
 ```
 
 ---
-
 class: text-2xl
 zoom: 1.05
 transition: fade
-
 ---
 
 # Lifecycle Focus: Pause, Resume, Remove
@@ -380,24 +369,23 @@ flowchart LR
 ```
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Logs
 
-Like with Docker, you can view the logs of your services using `docker-compose logs`. This will show you the combined logs of all services defined in your `docker-compose.yml` file.
+Like with Docker, you can view the logs of your services using `docker-compose logs`. This will show you the combined logs of all services defined in your `docker-compose.yml` file. 
 
 ```bash
 docker compose logs
 ```
 
-You can also specify a particular service to view its logs:
-
+You can also specify a particular service to view its logs: 
 - `docker-compose logs <service-name>`.
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Listing Containers
 
@@ -411,9 +399,10 @@ docker compose ps
 - Shows their status and current state
 - Useful for debugging
 
----
 
-## class: text-2xl
+---
+class: text-2xl
+---
 
 # Stopping Services
 
@@ -430,8 +419,8 @@ This will stop/pause the running containers.
 - This is useful during development when you may want to pause the application to make changes or debug without losing the current state of the containers.
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Starting Services
 
@@ -448,8 +437,8 @@ This starts containers that were previously created and stopped.
 If your compose file changed (ports/env/services), use `docker compose up -d` instead.
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Restarting Services
 
@@ -464,8 +453,8 @@ docker compose restart
 - Faster than tearing down the whole stack
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Tearing Down the Stack
 
@@ -482,8 +471,8 @@ docker compose down
 Use `docker compose down -v` only when you want to delete persisted data.
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Executing Commands in a Running Service
 
@@ -498,8 +487,8 @@ docker compose exec app sh
 - Service must already be running
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # One-Off Commands with `run`
 
@@ -514,8 +503,8 @@ docker compose run --rm app npm run migrate
 - `--rm` removes the container after completion
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Following Logs Live
 
@@ -530,8 +519,8 @@ docker compose logs -f app
 - Add `--tail=100` to limit initial output
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Decomposition Goal
 
@@ -546,8 +535,8 @@ Compose gives us one place to define how these pieces run together.
 <!-- TODO: Need to go through how we decompose the code. -->
 
 ---
-
-## class: text-2xl code-lg
+class: text-2xl code-lg
+---
 
 # Add the Database Service
 
@@ -568,10 +557,8 @@ services:
 Now data storage is explicit and independently manageable.
 
 ---
-
 class: text-2xl code-lg
 zoom: 0.92
-
 ---
 
 # Add the API Service
@@ -596,8 +583,8 @@ services:
 API connects to Postgres at `db:5432` using Compose DNS.
 
 ---
-
-## class: text-2xl code-lg
+class: text-2xl code-lg
+---
 
 # Add the Web Service
 
@@ -620,8 +607,8 @@ services:
 Now UI and API can evolve independently.
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Service Startup and Readiness
 
@@ -634,10 +621,8 @@ Now UI and API can evolve independently.
 Compose helps sequence services, but resilient apps handle transient failures.
 
 ---
-
 class: text-2xl
 zoom: 0.92
-
 ---
 
 # Startup vs Readiness Sequence
@@ -657,8 +642,8 @@ sequenceDiagram
 ```
 
 ---
-
-## class: text-2xl code-lg
+class: text-2xl code-lg
+---
 
 # Persist Database Data with Volumes
 
@@ -678,8 +663,8 @@ volumes:
 Without this, `docker compose down -v` and container replacement can wipe local state.
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Docker Volumes: Named Volumes
 
@@ -701,8 +686,8 @@ volumes:
 - Easy to reuse across container recreations
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Docker Volumes: Bind Mounts (Host Path)
 
@@ -721,11 +706,9 @@ services:
 - Less portable across machines than named volumes
 
 ---
-
 layout: two-cols
 layoutClass: cols-67-33
 class: text-2xl
-
 ---
 
 # Internal Networking and DNS
@@ -752,8 +735,8 @@ flowchart LR
 ```
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Scale Stateless Services
 
@@ -770,8 +753,8 @@ docker compose up -d --scale web=3
 [We will talk more about this at a later time.]{ .sentence-emphasis }
 
 ---
-
-## class: text-2xl framed-lists-amber
+class: text-2xl framed-lists-amber
+---
 
 # ☑ Troubleshooting Checklist
 
@@ -786,8 +769,8 @@ When things fail, check in this order:
 Most startup issues are config or networking mismatches.
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Reference Links
 
@@ -804,8 +787,8 @@ Official Docker docs used in this module:
 - [Storage overview (volumes vs bind mounts)](https://docs.docker.com/engine/storage/)
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Activity: Debug Then Extend
 
@@ -820,8 +803,8 @@ Part 1: find and fix a startup failure.
 Part 2: add a 4th service and integrate it with minor changes.
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Activity Setup
 
@@ -838,8 +821,8 @@ Rules:
 - Be ready to explain root cause and fix path
 
 ---
-
-## class: text-2xl code-lg
+class: text-2xl code-lg
+---
 
 # Part 1: Broken System
 
@@ -854,8 +837,8 @@ docker compose logs -f api
 You should see a clear runtime error in API logs, but the root cause is not immediately obvious from the web UI.
 
 ---
-
-## class: text-2xl code-lg
+class: text-2xl code-lg
+---
 
 # Part 1: Compose File (With Bug)
 
@@ -884,8 +867,8 @@ services:
 ```
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Part 1: Investigation Checklist
 
@@ -900,8 +883,8 @@ Use this flow:
 Goal: explain why the error happens, not just what to change.
 
 ---
-
-## class: text-2xl framed-lists-green
+class: text-2xl framed-lists-green
+---
 
 # Part 1: Expected Fix
 
@@ -915,8 +898,8 @@ Goal: explain why the error happens, not just what to change.
   - `docker compose logs api`
 
 ---
-
-## class: text-2xl
+class: text-2xl
+---
 
 # Part 2: Extend with New Service
 
@@ -931,8 +914,8 @@ Integrate it so API sends a notify call when a new event is created.
 Keep it simple: no queues, no auth, no persistence.
 
 ---
-
-## class: text-2xl code-lg
+class: text-2xl code-lg
+---
 
 # Part 2: Minimal Integration Changes
 
@@ -962,8 +945,8 @@ await fetch(`${process.env.NOTIFIER_URL}/notify`, {
 ```
 
 ---
-
-## class: text-2xl framed-lists-blue
+class: text-2xl framed-lists-blue
+---
 
 # Deliverables
 

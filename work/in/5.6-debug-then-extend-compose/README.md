@@ -54,7 +54,26 @@ await fetch(`${process.env.NOTIFIER_URL}/notify`, {
   method: 'POST',
   headers: { 'content-type': 'application/json' },
   body: JSON.stringify({ type: 'event.created', id: event.id }),
-});
+})
 ```
 
 Keep the notifier call simple (log and continue on failure is acceptable for this activity).
+
+## Submit
+
+Submit the following to Canvas:
+
+For this activity, submit only 3 screenshots + 3 short text answers.
+
+**Screen Shots**
+
+1. Screenshot: `docker compose ps` after Part 1 fix (shows `web`, `api`, `db` running)
+2. Screenshot: `docker compose logs api` showing successful DB connection after fix
+3. Screenshot: `docker compose logs notifier` showing a received notification after creating an event (Part 2)
+
+**Short Text**
+Submit a file called `answers.md` containing:
+
+1. Symptom (what failed in Part 1)
+2. Root cause (wrong hostname in `DATABASE_URL`: `database` vs `db`)
+3. Exact fix they made (the line they changed)
